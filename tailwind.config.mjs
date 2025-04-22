@@ -7,6 +7,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'], // Tambahkan di sini
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
