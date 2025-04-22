@@ -11,8 +11,8 @@ const GenderChart = ({ malePercentage, femalePercentage }) => {
             className="bg-pink-500 h-10 rounded-full absolute left-0 top-0 transition-all duration-300"
             style={{ width: `${femalePercentage}%` }}
           ></div>
-          <span className="text-white font-semibold z-10">Perempuan</span>
-          <span className="absolute right-4 text-white font-bold text-lg z-10">
+          <span className="text-white font-semibold relative">Perempuan</span>
+          <span className="absolute right-4 text-white font-bold text-lg">
             {femalePercentage}%
           </span>
         </div>
@@ -25,8 +25,8 @@ const GenderChart = ({ malePercentage, femalePercentage }) => {
             className="bg-purple-500 h-10 rounded-full absolute left-0 top-0 transition-all duration-300"
             style={{ width: `${malePercentage}%` }}
           ></div>
-          <span className="text-white font-semibold z-10">Laki-laki</span>
-          <span className="absolute right-4 text-white font-bold text-lg z-10">
+          <span className="text-white font-semibold relative ">Laki-laki</span>
+          <span className="absolute right-4 text-white font-bold text-lg">
             {malePercentage}%
           </span>
         </div>

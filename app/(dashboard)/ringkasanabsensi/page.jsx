@@ -4,6 +4,7 @@ import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
 import { FaArrowLeft } from "react-icons/fa";
 import AttendanceChart from "./_components/chartbulanan";
+import AttendanceMonthTable from "./_components/tabelbulanan";
 
 export default function Beranda() {
   return (
@@ -28,6 +29,8 @@ export default function Beranda() {
   </button>
 </h1>
  <AttendanceChart/>
+
+ <AttendanceMonthTable/>
       </main>
     </div>
   );

@@ -5,7 +5,7 @@ import Header from "@/app/_components/Header";
 import AttendanceStats from "./_components/kehadiranstatis";
 import ClassCards from "./_components/Allkelas";
 
-export default function Aktivitas() {
+export default function Absensi() {
   return (
     <div className="flex h-screen overflow-hidden"> {/* Background diatur di sini */}
       <Header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md" />
@@ -20,7 +20,7 @@ export default function Aktivitas() {
           <AttendanceStats/>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <div className="bg-white p-8  rounded-lg shadow-md mt-6">
           <ClassCards/>
         </div>
       </main>

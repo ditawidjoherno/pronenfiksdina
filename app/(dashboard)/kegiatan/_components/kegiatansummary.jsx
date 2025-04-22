@@ -1,29 +1,45 @@
 "use client";
-import React from "react";
+
+import React, { useState } from "react";
 import { FaPlayCircle, FaCheckCircle, FaUsers, FaUserTie } from "react-icons/fa";
+import ActivityNowPopup from "./KegiatanBerlangsung";
+import ActivityEndPopup from "./KegiatanSelesai";
+import AmountPopup from "./JumlahPartisipan";
+import ResponsiblePopup from "./Penanggungjawab";
+
 
 const KegiatanSummary = () => {
+  const [popupType, setPopupType] = useState(null);
+
   const data = [
-    { label: "Kegiatan Berlangsung", value: 12, icon: <FaPlayCircle />, color: "bg-blue-200" },
-    { label: "Kegiatan Selesai", value: 25, icon: <FaCheckCircle />, color: "bg-white" },
-    { label: "Jumlah Partisipan", value: 348, icon: <FaUsers />, color: "bg-green-200" },
-    { label: "Penanggung Jawab", value: 15, icon: <FaUserTie />, color: "bg-yellow-200" },
+    { label: "Kegiatan Berlangsung", value: 12, icon: <FaPlayCircle />, color: "border-blue-400", popup: "KegiatanBerlangsung" },
+    { label: "Kegiatan Selesai", value: 25, icon: <FaCheckCircle />, color: "border-gray-400", popup: "KegiatanSelesai" },
+    { label: "Jumlah Partisipan", value: 348, icon: <FaUsers />, color: "border-green-400", popup: "JumlahPartisipan" },
+    { label: "Penanggung Jawab", value: 15, icon: <FaUserTie />, color: "border-yellow-400", popup: "Penanggungjawab" },
   ];
+
+  const handleClick = (popup) => {
+    setPopupType(popup);
+  };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5 p-4">
       {data.map((item, index) => (
-        <div
+        <button
           key={index}
-          className={`flex items-center p-4 rounded-lg shadow-md ${item.color}`}
+          className={`flex flex-col items-center p-6 border-2 rounded-xl shadow-md ${item.color} bg-white cursor-pointer hover:bg-gray-100 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 active:scale-95`}
+          onClick={() => handleClick(item.popup)}
         >
-          <div className="text-4xl text-gray-700 mr-4">{item.icon}</div>
-          <div>
-            <p className="text-sm text-gray-600 font-semibold">{item.label}</p>
-            <p className="text-2xl font-bold text-gray-800">{item.value}</p>
-          </div>
-        </div>
+          <div className="text-5xl text-gray-700 mb-4">{item.icon}</div>
+          <p className="text-lg font-semibold text-gray-600">{item.label}</p>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{item.value}</p>
+        </button>
       ))}
+
+      {popupType === "KegiatanBerlangsung" && <ActivityNowPopup onClose={() => setPopupType(null)} />}
+      {popupType === "KegiatanSelesai" && <ActivityEndPopup onClose={() => setPopupType(null)} />}
+      {popupType === "JumlahPartisipan" && <AmountPopup onClose={() => setPopupType(null)} />}
+      {popupType === "Penanggungjawab" && <ResponsiblePopup onClose={() => setPopupType(null)} />}
     </div>
   );
 };

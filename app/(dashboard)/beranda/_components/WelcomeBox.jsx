@@ -20,8 +20,11 @@ const WelcomeBox = () => {
           {/* Right Content (Text) */}
           <div>
             <h2 className="text-2xl font-semibold text-[#070841]">Hai, Teacher!</h2>
-            <p className="text-xl font-poppins">
-              SEVH akan membantu anda dalam memanajemen kesiswaan di SMA N 1 Tombariri
+            <h1 className="text-xl font-poppins">
+            Selamat datang di SEVH!  
+            </h1>
+            <p className="text-xl">
+            Buat semuanya lebih mudah dan praktis untuk siswa dan guru
             </p>
           </div>
         </div>

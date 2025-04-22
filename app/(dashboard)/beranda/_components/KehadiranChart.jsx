@@ -30,18 +30,20 @@ const KehadiranChart = () => {
 
   const dataKehadiran = {
     labels: [
-      "X A", "X B", "X C", "XI IPA1", "XI IPA2", "XI IPS1",
-      "XI IPS2", "XI BAHASA", "XII IPA1", "XII IPA2", "XII IPS1", "XII IPS2", "XII BAHASA"
+      "X A", "X B", "X C", "X D", "XI A", "XI B",
+      "XI C", "XI D", "XII A", "XII B", "XII C", "XII D"
     ],
     datasets: [
       {
         label: "Jumlah Kehadiran",
-        data: [20, 25, 30, 15, 5, 30, 14, 28, 25, 30, 25, 10, 15],
-        backgroundColor: [
-          "#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#1abc9c",
-          "#3498db", "#9b59b6", "#34495e", "#95a5a6", "#d35400",
-          "#c0392b", "#8e44ad", "#2980b9"
-        ],
+        data: [20, 25, 30, 15, 5, 30, 14, 28, 25, 30, 25, 10],
+        backgroundColor: "#B2A5FF",
+        borderRadius: 20,
+      },
+      {
+        label: "Jumlah Keseluruhan Siswa",
+        data: [35, 40, 38, 32, 30, 45, 33, 40, 42, 38, 36, 29],
+        backgroundColor: "#493D9E",
         borderRadius: 20,
       },
     ],
@@ -50,7 +52,7 @@ const KehadiranChart = () => {
   const options = {
     responsive: true,
     plugins: {
-      legend: { display: false },
+      legend: { display: true },
       title: {
         display: true,
         text: `Kehadiran Siswa - ${tanggalHariIni}`,
@@ -68,12 +70,13 @@ const KehadiranChart = () => {
       },
     },
     layout: {
-      padding: 0, // Mengurangi padding di sekitar chart
+      padding: 0,
     },
+    maintainAspectRatio: false,
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-0 rounded-lg shadow-lg bg-white mt-5">
+    <div className="w-full max-w-6xl mx-auto p-0 rounded-2xl shadow-lg bg-white mt-5" style={{ height: "450px" }}>
       <Bar data={dataKehadiran} options={options} />
     </div>
   );

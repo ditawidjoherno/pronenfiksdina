@@ -18,7 +18,7 @@ const AccountTabs = ({ onTabChange }) => {
         }`}
         onClick={() => handleTabClick("user")}
       >
-        Users
+        Siswa
       </button>
       <button
         className={`flex-1 text-center py-2 font-medium ${
@@ -28,7 +28,7 @@ const AccountTabs = ({ onTabChange }) => {
         }`}
         onClick={() => handleTabClick("admin")}
       >
-        Admins
+        Guru
       </button>
     </div>
   );
