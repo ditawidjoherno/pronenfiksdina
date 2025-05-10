@@ -2,7 +2,7 @@
 import React from "react";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
-import WelcomeBox from "./_components/BoxWelcome";
+import BoxWelcome from "../_components/BoxWelcome";
 import InformasiList from "./_components/InformasiUmum";
 import Reminder from "./_components/Reminder";
 import EventCalendar from "./_components/KalenderSiswa";
@@ -27,7 +27,7 @@ export default function Beranda() {
           Dashboard
         </h1>
 
-        <WelcomeBox />
+        <BoxWelcome />
 
         {/* RecentActivity lebih lebar */}
         <div className="w-full max-w-6xl mx-auto">

@@ -1,13 +1,21 @@
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+"use client";
+import React, { useEffect, useState } from "react";
 import { FaUsers, FaChartPie } from "react-icons/fa";
 import StudentPopup from "./SiswaJumlah";
 import TeacherPopup from "./GuruJumlah";
 import TotalPopup from "./TotalJumlah";
+import useJumlah from "@/hooks/use-jumlah";// pastikan path sesuai
 
 const BoxTiga = () => {
-  const router = useRouter();
   const [popupType, setPopupType] = useState(null);
+  const { loading, error, data, getUserJumlah } = useJumlah();
+
+  useEffect(() => {
+    getUserJumlah(); // Memanggil API saat komponen di-mount
+  }, []);
+
+  if (loading) return <p className="text-center mt-5">Memuat data...</p>;
+  if (error) return <p className="text-center text-red-500 mt-5">{error}</p>;
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -22,7 +30,7 @@ const BoxTiga = () => {
           </div>
           <div className="ml-6">
             <h2 className="text-xl font-semibold">Siswa</h2>
-            <p className="text-md font-bold">300</p>
+            <p className="text-md font-bold">{data?.siswa}</p> {/* Display data from API */}
           </div>
         </div>
 
@@ -36,7 +44,7 @@ const BoxTiga = () => {
           </div>
           <div className="ml-6">
             <h2 className="text-xl font-semibold">Guru</h2>
-            <p className="text-md font-bold">20</p>
+            <p className="text-md font-bold">{data?.guru}</p> {/* Display data from API */}
           </div>
         </div>
 
@@ -50,12 +58,12 @@ const BoxTiga = () => {
           </div>
           <div className="ml-6">
             <h2 className="text-xl font-semibold">Total</h2>
-            <p className="text-md font-bold">320</p>
+            <p className="text-md font-bold">{data?.total}</p> {/* Display data from API */}
           </div>
         </div>
       </div>
 
-      {/* Tampilkan Popup sesuai pilihan */}
+      {/* Popup */}
       {popupType === "student" && <StudentPopup onClose={() => setPopupType(null)} />}
       {popupType === "teacher" && <TeacherPopup onClose={() => setPopupType(null)} />}
       {popupType === "total" && <TotalPopup onClose={() => setPopupType(null)} />}

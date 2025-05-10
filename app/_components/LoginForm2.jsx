@@ -1,41 +1,32 @@
 "use client";
 import React, { useState } from "react";
-import { IoPerson, IoLockClosed, IoEye, IoEyeOff } from "react-icons/io5";  // Ikon untuk username dan password
-import { useRouter } from "next/navigation";
+import { IoPerson, IoLockClosed, IoEye, IoEyeOff } from "react-icons/io5";
+import useLogin from "@/hooks/use-login"; // pastikan path benar
 
 const LoginForm = () => {
-    const router = useRouter();
-    const [username, setUsername] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
 
-    const handleSubmit = (e) => {
+    const { login, loading, error } = useLogin();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage("");
 
-        if (!username || !password) {
-            setErrorMessage("Username dan Password harus diisi.");
-            return;
-        }
+        if (!identifier || !password) return;
 
-        alert("Login berhasil! (Simulasi)");
-        router.push("/beranda");
+        await login({ identifier, password });
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen transform translate-y-20">
-            <div className="w-[320px] p-4 px-6 bg-[#ffffff] shadow-2xl rounded-2xl max-h-[450px]"
+            <div className="w-[320px] p-4 px-6 bg-white shadow-2xl rounded-2xl max-h-[450px]"
                 style={{ boxShadow: "8px 8px 8px rgba(0, 0, 0, 0.3)" }}>
                 
-                {/* Logo Gambar */}
+                {/* Logo */}
                 <div className="flex justify-center mb-4">
-                    <img 
-                        src="/images/logosevh.png" // Sesuaikan dengan path logo Anda
-                        alt="Logo" 
-                        className="w-10 h-10" // Ukuran logo, sesuaikan jika perlu
-                    />
+                    <img src="/images/logosevh.png" alt="Logo" className="w-10 h-10" />
                 </div>
 
                 <h1 className="text-xl font-bold text-center text-[#011E43]">Selamat Datang!</h1>
@@ -43,13 +34,13 @@ const LoginForm = () => {
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="relative">
-                        <label htmlFor="username" className="block text-xs text-black">Username</label>
+                        <label htmlFor="identifier" className="block text-xs text-black">NIP atau NISN</label>
                         <IoPerson className="absolute left-3 top-6 w-4 h-4 text-black" />
                         <input
                             type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="identifier"
+                            value={identifier}
+                            onChange={(e) => setIdentifier(e.target.value)}
                             className="w-full pl-10 pr-3 py-1 border border-[#9ebcfa] rounded-lg focus:ring-2 focus:outline-none text-sm"
                             required
                         />
@@ -63,7 +54,7 @@ const LoginForm = () => {
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full pl-10 pr-3 py-1 border border-[#9ebcfa] rounded-lg focus:ring-2 focus:outline-none text-sm"
+                            className="w-full pl-10 pr-10 py-1 border border-[#9ebcfa] rounded-lg focus:ring-2 focus:outline-none text-sm"
                             required
                         />
                         {showPassword ? (
@@ -84,14 +75,14 @@ const LoginForm = () => {
                         <label htmlFor="rememberMe" className="ml-2 text-xs text-gray-700">Remember Me</label>
                     </div>
 
-                    {errorMessage && <p className="text-xs text-red-500 text-center">{errorMessage}</p>}
+                    {error && <p className="text-xs text-red-500 text-center">{error}</p>}
 
                     <button
                         type="submit"
-                        className="w-3/4 mx-auto flex justify-center py-1.5 text-white bg-[#4664eb] rounded-md hover:bg-[#FFC21E] text-sm"
-                        onClick={() => router.push("/beranda")}
+                        disabled={loading}
+                        className="w-3/4 mx-auto flex justify-center py-1.5 text-white bg-[#4664eb] rounded-md hover:bg-[#FFC21E] text-sm disabled:opacity-50"
                     >
-                        Login
+                        {loading ? "Loading..." : "Login"}
                     </button>
                 </form>
             </div>

@@ -1,29 +1,45 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { IoClose } from 'react-icons/io5';
 
-export default function StudentPopup({ onClose }) { 
-  const students = [
-    { id: 1, name: 'Olivia Carter Sophia', nisn: '2039918290', gender: 'Perempuan', class: 'XI-B' },
-    { id: 2, name: 'Amelia Johnson', nisn: '2039918291', gender: 'Perempuan', class: 'XI-A' },
-    { id: 3, name: 'Noah William', nisn: '2039918292', gender: 'Laki-laki', class: 'XI-C' },
-    { id: 4, name: 'Liam Anderson', nisn: '2039918293', gender: 'Laki-laki', class: 'XI-D' },
-    { id: 5, name: 'Emma Brown', nisn: '2039918294', gender: 'Perempuan', class: 'XI-E' }
-  ];
+export default function StudentPopup({ onClose }) {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/siswa') // Ganti dengan URL API Laravel sesuai server kamu
+      .then((res) => {
+        if (!res.ok) throw new Error('Gagal mengambil data siswa');
+        return res.json();
+      })
+      .then((data) => {
+        setStudents(data.data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-40" onClick={onClose}>
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }} 
-        animate={{ opacity: 1, y: 0 }} 
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-40"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="bg-white rounded-2xl shadow-xl max-w-lg w-full"
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="bg-white rounded-2xl shadow-xl max-w-3xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Modal */}
+        {/* Header */}
         <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-5 rounded-t-2xl flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">Daftar Siswa</h2>
@@ -36,38 +52,59 @@ export default function StudentPopup({ onClose }) {
           </button>
         </div>
 
-        {/* Konten Table */}
+        {/* Body */}
         <div className="p-5 overflow-y-auto max-h-80">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="p-3 text-left">No</th>
-                <th className="p-3 text-left">Nama</th>
-                <th className="p-3 text-left">NISN</th>
-                <th className="p-3 text-left">Gender</th>
-                <th className="p-3 text-left">Kelas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student, index) => (
-                <tr key={student.id} className="border-b hover:bg-gray-50 transition">
-                  <td className="p-3">{index + 1}.</td>
-                  <td className="p-3 flex items-center gap-2">
-                    <Image src="/images/profilsiswa.jpg" alt="Avatar" width={28} height={28} className="rounded-full border" />
-                    {student.name}
-                  </td>
-                  <td className="p-3">{student.nisn}</td>
-                  <td className="p-3">{student.gender}</td>
-                  <td className="p-3">{student.class}</td>
+          {loading ? (
+            <p className="text-gray-500 text-center">Memuat data...</p>
+          ) : error ? (
+            <p className="text-red-500 text-center">{error}</p>
+          ) : (
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700">
+                  <th className="p-3 text-left">No</th>
+                  <th className="p-3 text-left">Nama</th>
+                  <th className="p-3 text-left">NISN</th>
+                  <th className="p-3 text-left">Gender</th>
+                  <th className="p-3 text-left">Kelas</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {students.map((student, index) => (
+                  <tr key={student.id} className="border-b hover:bg-gray-50 transition">
+                    <td className="p-3">{index + 1}.</td>
+                    <td className="p-3 flex items-center gap-2">
+                      <Image
+                        src="/images/profilsiswa.jpg"
+                        alt="Avatar"
+                        width={28}
+                        height={28}
+                        className="rounded-full border"
+                      />
+                      {student.nama || '-'}
+                    </td>
+                    <td className="p-3">{student.nisn || '-'}</td>
+                    <td className="p-3">
+                      {student.jenis_kelamin === 'L'
+                        ? 'Laki-laki'
+                        : student.jenis_kelamin === 'P'
+                          ? 'Perempuan'
+                          : '-'}
+                    </td>
+                    <td className="p-3">{student.kelas || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
-        {/* Footer Modal */}
+        {/* Footer */}
         <div className="bg-gray-100 p-4 rounded-b-2xl flex justify-center">
-          <button onClick={onClose} className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+          >
             Tutup
           </button>
         </div>

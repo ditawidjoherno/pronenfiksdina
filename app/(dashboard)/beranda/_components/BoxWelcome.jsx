@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const WelcomeBox = () => {
+const BoxWelcome = () => {
   return (
     <div className="flex flex-col w-full max-w-6xl mx-auto mt-10">
       {/* Judul "Dashboard" */}
@@ -33,4 +33,4 @@ const WelcomeBox = () => {
   );
 };
 
-export default WelcomeBox;
+export default BoxWelcome;

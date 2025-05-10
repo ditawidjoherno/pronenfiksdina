@@ -3,24 +3,30 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaPlus, FaUser } from 'react-icons/fa';
-import { IoMdLogIn } from "react-icons/io";
+import { IoMdLogIn } from 'react-icons/io';
 import PopupForm from './EkskulForm';
 
-const ekskulData = [
-  {
-    id: 1,
-    name: 'OSIS',
-    mentor: 'Treasure Arsinta',
-    image: 'images/osis.png',
-  },
-];
+// ✅ Mapping manual nama ekskul ke route folder
 
 export default function EkskulList() {
   const router = useRouter();
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
   const handleMasukClick = (ekskulName) => {
-    router.push(`/ekskul/${encodeURIComponent(ekskulName.toLowerCase())}`);
+    router.push('/ekskul/isiekskul');
+  };  
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [ekskulData, setEkskulData] = useState([
+    {
+      id: 1,
+      name: 'OSIS',
+      mentor: 'Treasure Arsinta',
+      image: 'images/osis.png',
+    },
+  ]);
+
+ 
+  const handleAddEkskul = (newEkskul) => {
+    setEkskulData((prevData) => [...prevData, newEkskul]);
+    setIsPopupOpen(false);
   };
 
   return (
@@ -34,7 +40,7 @@ export default function EkskulList() {
       </button>
 
       {/* Popup Form */}
-      {isPopupOpen && <PopupForm onClose={() => setIsPopupOpen(false)} />}
+      {isPopupOpen && <PopupForm onAddEkskul={handleAddEkskul} onClose={() => setIsPopupOpen(false)} />}
 
       {/* Kartu Ekskul */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -50,7 +56,6 @@ export default function EkskulList() {
                   <p className="text-xs">Mentor</p>
                 </div>
               </div>
-              {/* Tombol geser ke tengah */}
               <div className="flex justify-center mt-4">
                 <button
                   onClick={() => handleMasukClick(ekskul.name)}

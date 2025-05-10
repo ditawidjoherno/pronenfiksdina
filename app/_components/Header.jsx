@@ -1,10 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiLogoutCircleRLine } from "react-icons/ri";
+import useUser from "@/hooks/use-user";
 
 const Header = () => {
   const router = useRouter();
+  const { loading, error, data, getUserData } = useUser();
+
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   const handleLogout = () => {
     router.push("/");
@@ -21,10 +27,17 @@ const Header = () => {
               className="w-8 h-8 rounded-full object-cover"
             />
           </div>
-          <div>
-            <p className="text-black text-sm font-medium">Nama Anda</p>
-            <p className="text-black text-xs">Super Admin</p>
-          </div>
+          {data ? (
+            <div>
+              <p className="text-black text-sm font-medium">{data.nama}</p>
+              <p className="text-black text-xs">{data.role}</p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-black text-sm font-medium">Memuat...</p>
+            </div>
+          )}
+
         </div>
         <button
           onClick={handleLogout}

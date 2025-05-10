@@ -3,21 +3,36 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { IoClose } from 'react-icons/io5';
+import { useState, useEffect } from 'react';
 
-export default function TotalPopup({ onClose }) { 
-  const students = [
-    { id: 1, name: 'Olivia Carter Sophia', nip: '2039918290', gender: 'Perempuan', class: 'XI-B' },
-    { id: 2, name: 'Amelia Johnson', nip: '2039918291', gender: 'Perempuan', class: 'Kesiswaan' },
-    { id: 3, name: 'Noah William', nip: '2039918292', gender: 'Laki-laki', class: 'XI-C' },
-    { id: 4, name: 'Liam Anderson', nip: '2039918293', gender: 'Laki-laki', class: 'XI-D' },
-    { id: 5, name: 'Emma Brown', nip: '2039918294', gender: 'Perempuan', class: 'Kesiswaan' }
-  ];
+export default function TotalPopup({ onClose }) {
+  const [students, setStudents] = useState([]);  // State untuk menyimpan data user
+  const [total, setTotal] = useState(0);  // State untuk menyimpan total user
+
+  // Mengambil data user dan total dari backend
+  useEffect(() => {
+    const fetchUsersWithTotal = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/total-user');
+        if (!res.ok) {
+          throw new Error('Gagal mengambil data');
+        }
+        const data = await res.json();
+        setStudents(data.data);  // Menyimpan data user
+        setTotal(data.total_users);  // Menyimpan total user
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchUsersWithTotal();
+  }, []);  // Hanya dipanggil sekali saat komponen dimuat
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-40" onClick={onClose}>
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="bg-white rounded-2xl shadow-xl max-w-lg w-full"
@@ -28,7 +43,7 @@ export default function TotalPopup({ onClose }) {
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">Daftar Total</h2>
             <span className="bg-white text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
-              {students.length} Data
+              {total} Data
             </span>
           </div>
           <button onClick={onClose} className="bg-white p-1 rounded-full text-yellow-400 hover:bg-gray-200 transition">
@@ -43,7 +58,7 @@ export default function TotalPopup({ onClose }) {
               <tr className="bg-gray-100 text-gray-700">
                 <th className="p-3 text-left">No</th>
                 <th className="p-3 text-left">Nama</th>
-                <th className="p-3 text-left">NIP</th>
+                <th className="p-3 text-left">NIP/NISN</th>
                 <th className="p-3 text-left">Gender</th>
                 <th className="p-3 text-left">Kelas</th>
               </tr>
@@ -56,9 +71,15 @@ export default function TotalPopup({ onClose }) {
                     <Image src="/images/profilsiswa.jpg" alt="Avatar" width={28} height={28} className="rounded-full border" />
                     {student.name}
                   </td>
-                  <td className="p-3">{student.nip}</td>
-                  <td className="p-3">{student.gender}</td>
-                  <td className="p-3">{student.class}</td>
+                  <td className="p-3">
+                    {student.nip ? student.nip : (student.nisn ? student.nisn : '-')}
+                  </td>
+                  <td className="p-3">
+                    {student.gender === 'L' ? 'Laki-laki' : (student.gender === 'P' ? 'Perempuan' : '-')}
+                  </td>
+                  <td className="p-3">
+                    {student.class ? student.class : '-'}
+                  </td>
                 </tr>
               ))}
             </tbody>

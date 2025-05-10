@@ -11,46 +11,43 @@ const useLogin = () => {
   const router = useRouter();
   const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME;
 
-  const login = async ({ nip, nisn, password }) => {
-    setLoading(true);
-    setError(null);
-    setUser(null);
+// hooks/use-login.js
 
-    const payload = { password };
-    if (nip) payload.nip = nip;
-    if (nisn) payload.nisn = nisn;
+const login = async ({ identifier, password }) => {
+  setLoading(true);
+  setError(null);
+  setUser(null);
 
-    try {
-      const response = await axios.post("http://localhost:8000/api/login", payload, {
-        withCredentials: true,
-      });
+  const payload = { identifier, password };
 
-      const { user: userData, token } = response.data;
+  try {
+    // Use axios instead of axiosInstance
+    const response = await axios.post("http://localhost:8000/api/login", payload);
 
-      setUser(userData);
-      setCookie(cookieName, token, { path: '/', maxAge: 3600 });
+    const { user: userData, token } = response.data;
 
+    // Simpan data pengguna di localStorage
+    localStorage.setItem("user", JSON.stringify(userData));
+    
+    setUser(userData);
+    setCookie(cookieName, token, { path: '/', maxAge: 3600 });
+
+    // Redirect berdasarkan role pengguna
+    if (userData.role === "siswa") {
+      router.push("/beranda/siswa"); 
+    } else if (userData.role === "guru") {
       router.push("/beranda");
-    } catch (err) {
-      console.error("Login error:", err);
-      if (err.response) {
-        console.error("Response data:", err.response.data);
-        console.error("Payload yang dikirim:", payload);
-
-        if (err.response.status === 422) {
-          setError("Data login tidak valid. Periksa NIP/NISN atau password.");
-        } else if (err.response.status === 401) {
-          setError("Password salah.");
-        } else {
-          setError("Terjadi kesalahan saat login.");
-        }
-      } else {
-        setError("Gagal terhubung ke server.");
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      router.push("/beranda");
     }
-  };
+  } catch (err) {
+    console.error("Login error:", err);
+    setError("Login failed.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return { loading, error, user, login };
 };

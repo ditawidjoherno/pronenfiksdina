@@ -5,7 +5,7 @@ import { FaHome, FaUserPlus, FaClipboardList, FaPaintBrush, FaClipboardCheck, Fa
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
 
-const menuItems = [
+const allMenuItems = [
   { name: 'Beranda', icon: <FaHome />, path: '/beranda', notifications: 2 },
   { name: 'Profil', icon: <IoPerson />, path: '/kelolaprofil', notifications: 0 },
   { name: 'Tambah Akun', icon: <FaUserPlus />, path: '/tambahakun', notifications: 1 },
@@ -20,10 +20,15 @@ const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const collapsedState = localStorage.getItem("sidebarCollapsed") === "true";
     setIsCollapsed(collapsedState);
+
+    // Ambil role dari localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    setRole(user?.role || null);
   }, []);
 
   const toggleSidebar = () => {
@@ -37,23 +42,30 @@ const Sidebar = () => {
     localStorage.setItem("sidebarCollapsed", isCollapsed);
   };
 
+  // Filter menu untuk role siswa
+  const menuItems = allMenuItems.filter(item => {
+    if (role === "siswa" && (item.name === "Tambah Akun" || item.name === "Kegiatan")) {
+      return false;
+    }
+    return true;
+  });
+
   return (
-    <div className={`flex flex-col h-screen ${isCollapsed ? 'w-20' : 'w-64'} bg-[#98abe2] drop-shadow-lg shadow-white text-white transition-width duration-700 ease-in-out relative z-50`}> 
-      
+    <div className={`flex flex-col h-screen ${isCollapsed ? 'w-20' : 'w-64'} bg-[#98abe2] drop-shadow-lg text-white transition-width duration-700 ease-in-out relative z-50`}> 
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-8 bg-[#728cd3] p-2 rounded-full hover:bg-[#639fe9] focus:outline-none shadow-lg transition-transform duration-700 ease-in-out"
+        className="absolute -right-4 top-8 bg-[#728cd3] p-2 rounded-full hover:bg-[#639fe9] focus:outline-none shadow-lg"
       >
-        <FaBars className="text-white transform transition-transform duration-700 ease-in-out" style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        <FaBars className={`text-white transition-transform duration-700 ease-in-out ${isCollapsed ? 'rotate-180' : ''}`} />
       </button>
 
-      <div className="flex items-center justify-center pt-8 px-4 mb-8 h-20 transition-opacity duration-700 ease-in-out">
+      <div className="flex items-center justify-center pt-8 px-4 mb-8 h-20">
         <img
           src="/images/logosevh.png"
           alt="logo"
           width={70}
           height={70}
-          className={`block transition-transform duration-700 ease-in-out ${isCollapsed ? 'scale-75' : 'scale-100'}`}
+          className={`transition-transform duration-700 ease-in-out ${isCollapsed ? 'scale-75' : 'scale-100'}`}
         />
       </div>
 
@@ -62,60 +74,49 @@ const Sidebar = () => {
           {menuItems.map((item, index) => (
             <li
               key={index}
-              className={`flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ease-in-out ${
-                (item.path === "/beranda" && 
-                  (pathname.startsWith("/beranda/siswa"))) ||
-                (item.path === "/absensi" &&
-                  (pathname.startsWith("/absensi") ||
-                   pathname.startsWith("/ringkasanabsensi") ||
-                   pathname.startsWith("/detailabsensi") ||
-                   pathname.startsWith("/Inputabsensi"))) ||
-                (item.path === "/ekskul" && 
-                  (pathname.startsWith("/ekskul/osis"))) ||
-                (item.path === "/piket" &&
-                    (pathname.startsWith("/Inputpiket"))) ||
-                (item.path === "/studytour" &&
-                  (pathname.startsWith("/detailevent") ||
-                    pathname.startsWith(("/riwayattour")) ||
-                    pathname.startsWith("/Inputstudytour"))) ||
-                pathname === item.path
-                  ? "bg-[#728cd3]" 
+              className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${
+                pathname === item.path ||
+                (item.path === "/beranda" && pathname.startsWith("/beranda/siswa")) ||
+                (item.path === "/absensi" && pathname.startsWith("/absensi")) ||
+                (item.path === "/ekskul" && pathname.startsWith("/ekskul/isiekskul")) ||
+                (item.path === "/piket" && pathname.startsWith("/Inputpiket")) ||
+                (item.path === "/studytour" && (
+                  pathname.startsWith("/detailevent") ||
+                  pathname.startsWith("/riwayattour") ||
+                  pathname.startsWith("/Inputstudytour"))
+                )
+                  ? "bg-[#728cd3]"
                   : "hover:bg-[#3f84d8]"
               }`}
               onClick={() => handleMenuClick(item.path)}
             >
-              {/* Ikon Menu */}
-              <span className={`text-lg transition-all duration-700 ease-in-out ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
+              <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
                 {item.icon}
-              </span> 
-
-              {/* Nama Menu */}
-              <span className={`ml-2 text-lg transition-all duration-700 ease-in-out ${isCollapsed ? 'hidden' : 'block'}`}>
+              </span>
+              <span className={`ml-2 text-lg ${isCollapsed ? 'hidden' : 'block'}`}>
                 {item.name}
               </span>
-
-              {/* Notifikasi Badge */}
-                {item.notifications > 0 && (
-              <span 
-                 className={`absolute right-4 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 ${isCollapsed ? '-mr-4' : ''}`} 
-                 style={{ display: 'none' }} // Sembunyikan notifikasi untuk sementara
-              >
-              {item.notifications}
-              </span>
+              {item.notifications > 0 && (
+                <span 
+                  className={`absolute right-4 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 ${isCollapsed ? '-mr-4' : ''}`} 
+                  style={{ display: 'none' }} // Notifikasi disembunyikan sementara
+                >
+                  {item.notifications}
+                </span>
               )}
-            </li>                    
+            </li>
           ))}
         </ul>
       </nav>
 
       <button 
-        className='flex items-center p-2 cursor-pointer rounded-xl mx-3 mt-auto mb-4 bg-[#728cd3] hover:bg-[#5b70e9] transition-all duration-700 ease-in-out' 
+        className='flex items-center p-2 cursor-pointer rounded-xl mx-3 mt-auto mb-4 bg-[#728cd3] hover:bg-[#5b70e9] transition-all duration-700' 
         onClick={() => handleMenuClick('/')}
       >
-        <span className={`text-lg transition-all duration-700 ease-in-out ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
+        <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
           <RiLogoutCircleRLine />
         </span>
-        <span className={`ml-10 text-lg transition-all duration-700 ease-in-out ${isCollapsed ? 'hidden' : 'block'}`}>
+        <span className={`ml-10 text-lg ${isCollapsed ? 'hidden' : 'block'}`}>
           Logout
         </span>
       </button>

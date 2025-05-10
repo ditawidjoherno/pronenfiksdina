@@ -4,12 +4,12 @@ import { useParams, useRouter } from 'next/navigation';
 import Header from '@/app/_components/Header';
 import Sidebar from '@/app/_components/Sidebar';
 import { FaArrowLeft } from "react-icons/fa";
-import ImageBox from '../../ekskulsub/_components/Ekskulcard';
-import EkskulCard from '../../ekskulsub/_components/Ekscard';
-import StatistikEkskul from '../../ekskulsub/_components/Ekskulchart';
-import AnggotaEkskul from '../../ekskulsub/_components/AnggotaEkskul';
-import InformasiEkskul from '../../ekskulsub/_components/Informasieks';
-import AchievementBox from '../../ekskulsub/_components/Kejuaraan';
+import ImageBox from './_components/Ekskulcard';
+import EkskulCard from './_components/Ekscard';
+import EkskulChart from './_components/Ekskulchart';
+import AnggotaEkskul from './_components/AnggotaEkskul';
+import InformasiEkskul from './_components/Informasieks';
+import AchievementBox from './_components/Kejuaraan';
 
 
 export default function EkskulDetail() {
@@ -60,7 +60,7 @@ export default function EkskulDetail() {
           {/* Statistik dan Prestasi dalam satu baris */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex-1">
-              <StatistikEkskul />
+              <EkskulChart />
             </div>
             <div className="flex-1">
               <AchievementBox />
