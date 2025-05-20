@@ -1,48 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import { FaBell, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaBell, FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import GreenButton from './TombolTambah';
+import { useSession } from 'next-auth/react';
+import { parseISO, format } from 'date-fns';
+import { id as localeID } from 'date-fns/locale';
 
 Modal.setAppElement(typeof document !== 'undefined' ? document.body : null);
 
-const initialInformasiData = [
-  {
-    id: 1,
-    date: '03 Jan, 2025',
-    title: 'Rapat Pengurus',
-    text: 'Rapat untuk seluruh pengurus kelas x-xii pada besok akan diadakan di aula utama.',
-    author: 'Treasure Arsinta',
-    time: '17.30 pm',
-    color: 'bg-yellow-400'
-  },
-  {
-    id: 2,
-    date: '02 Jan, 2025',
-    title: 'Latihan Upacara',
-    text: 'Besok akan dilaksanakan latihan upacara pada jam setelah pelajaran pertama.',
-    author: 'Treasure Arsinta',
-    time: '17.30 pm',
-    color: 'bg-blue-600'
-  },
-  {
-    id: 3,
-    date: '01 Jan, 2025',
-    title: 'Pengingat Bekal',
-    text: 'Diingatkan kembali kepada siswa xii untuk membawa ekstra bekal dan minuman.',
-    author: 'Treasure Arsinta',
-    time: '17.30 pm',
-    color: 'bg-blue-600'
-  }
-];
-
 export default function InformasiList() {
-  const [informasiData, setInformasiData] = useState(initialInformasiData);
+  const [informasiData, setInformasiData] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState('');
+  const { data: session } = useSession();
+
+  const API_BASE = 'http://localhost:8000/api/informasi';
+
+  useEffect(() => {
+    fetch(API_BASE)
+      .then((res) => res.json())
+      .then((data) => {
+        setInformasiData(data);
+      });
+  }, []);
 
   const openModal = (info) => {
     setSelectedInfo(info);
@@ -57,30 +41,58 @@ export default function InformasiList() {
   };
 
   const handleDelete = () => {
-    setInformasiData(informasiData.filter((item) => item.id !== selectedInfo.id));
-    closeModal();
+    fetch(`${API_BASE}/${selectedInfo.id}`, { method: 'DELETE' })
+      .then(() => {
+        setInformasiData((prev) => prev.filter((i) => i.id !== selectedInfo.id));
+        closeModal();
+      });
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleSaveEdit = () => {
-    setInformasiData(
-      informasiData.map((item) =>
-        item.id === selectedInfo.id ? { ...item, text: editedText } : item
-      )
-    );
-    setIsEditing(false);
+    fetch(`${API_BASE}/${selectedInfo.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ text: editedText }),
+    })
+      .then((res) => res.json())
+      .then((updated) => {
+        setInformasiData((prev) =>
+          prev.map((i) => (i.id === updated.id ? { ...i, text: updated.text } : i))
+        );
+        setIsEditing(false);
+      });
   };
 
-  // Fungsi untuk membatasi teks menjadi 8 kata
+  const handleAddInfo = async (newInfo) => {
+    const finalInfo = {
+      ...newInfo,
+      author: session?.user?.name?.trim() || 'Admin Sistem',
+    };
+
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(finalInfo),
+    });
+
+    const created = await res.json();
+    setInformasiData((prev) => [created, ...prev]);
+  };
+
   const getShortText = (text) => {
+    if (typeof text !== 'string') return '-';
     const words = text.split(' ');
-    if (words.length > 8) {
-      return words.slice(0, 8).join(' ') + '...';
+    return words.length > 8 ? words.slice(0, 8).join(' ') + '...' : text;
+  };
+
+  const formatTanggal = (dateString) => {
+    try {
+      return format(parseISO(dateString), 'dd MMMM yyyy', { locale: localeID });
+    } catch {
+      return 'Tanggal tidak tersedia';
     }
-    return text;
   };
 
   return (
@@ -89,33 +101,29 @@ export default function InformasiList() {
         <h2 className="text-lg font-semibold flex items-center">
           <FaBell className="mr-2" /> Informasi Umum
         </h2>
-        <GreenButton />
+        <GreenButton onAddInfo={handleAddInfo} />
       </div>
+
       <div className="mt-4 space-y-3">
-        {informasiData.map((info) => (
-          <div 
-            key={info.id} 
+        {informasiData.map((info, index) => (
+          <div
+            key={info.id || index}
             className="p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
             onClick={() => openModal(info)}
           >
-            <div className={`inline-block px-3 py-1 text-sm font-semibold text-white rounded-md ${info.color}`}>
-              {info.date}
+            <div className={`inline-block px-3 py-1 text-sm font-semibold text-white rounded-md ${info.color?.trim() || 'bg-gray-500'}`}>
+              {info?.date ? formatTanggal(info.date) : 'Tanggal tidak tersedia'}
             </div>
-            {/* Menampilkan judul umum di bawah date */}
-            <h3 className="text-gray-800 font-bold mt-2">{info.title}</h3>
-            {/* Menampilkan teks yang dibatasi sebanyak 8 kata */}
-            <p className="mt-2 text-gray-700 font-medium">
-              {getShortText(info.text)}
-            </p>
+            <h3 className="text-gray-800 font-bold mt-2">{info?.title?.trim() || 'Tanpa Judul'}</h3>
+            <p className="mt-2 text-gray-700 font-medium">{getShortText(info?.text?.trim() || '-')}</p>
             <div className="mt-2 text-gray-500 text-sm flex items-center">
-              <img src="images/profil.jpg" alt="User" className="w-5 h-5 rounded-full mr-2" />
-              {info.author} / {info.time}
+              <img src="/images/profil.jpg" alt="User" className="w-5 h-5 rounded-full mr-2" />
+              {info?.author?.trim() || 'Anonim'} / {info?.time?.trim() || '-'}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -126,8 +134,8 @@ export default function InformasiList() {
         <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
           {selectedInfo && (
             <>
-              <h2 className="text-lg font-bold mb-2">{selectedInfo.date}</h2>
-              <h3 className="text-gray-800 font-semibold mb-2">{selectedInfo.title}</h3>
+              <h2 className="text-lg font-bold mb-2">{selectedInfo?.date ? formatTanggal(selectedInfo.date) : '-'}</h2>
+              <h3 className="text-gray-800 font-semibold mb-2">{selectedInfo?.title?.trim() || '-'}</h3>
               {isEditing ? (
                 <textarea
                   className="w-full border p-2 rounded-lg"
@@ -135,11 +143,11 @@ export default function InformasiList() {
                   onChange={(e) => setEditedText(e.target.value)}
                 />
               ) : (
-                <p className="text-gray-700 mb-4">{selectedInfo.text}</p>
+                <p className="text-gray-700 mb-4">{selectedInfo?.text?.trim() || '-'}</p>
               )}
               <div className="text-sm text-gray-500 flex items-center">
-                <img src="images/profil.jpg" alt="User" className="w-6 h-6 rounded-full mr-2" />
-                {selectedInfo.author} / {selectedInfo.time}
+                <img src="/images/profil.jpg" alt="User" className="w-6 h-6 rounded-full mr-2" />
+                {selectedInfo?.author?.trim() || '-'} / {selectedInfo?.time?.trim() || '-'}
               </div>
               <div className="mt-4 flex justify-end space-x-2">
                 {isEditing ? (
