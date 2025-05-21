@@ -23,13 +23,15 @@ export default function ImageBox() {
       <div className="w-full max-w-screen-xl overflow-hidden relative">
         {/* Gambar */}
         <Image
-          src={imageSrc}
-          alt="Group Photo"
-          width={1920}
-          height={500}
-          layout="responsive"
-          className="rounded-2xl"
-        />
+  src={imageSrc}
+  alt="Group Photo"
+  width={1920}
+  height={500}
+  layout="responsive"
+  className="rounded-2xl"
+  priority // ✅ fix warning LCP
+/>
+
         {/* Overlay putih dengan blur */}
         <div className="absolute inset-0 bg-indigo-500/50 rounded-2xl"></div>
 

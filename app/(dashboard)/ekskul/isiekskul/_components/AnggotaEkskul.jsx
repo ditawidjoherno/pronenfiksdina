@@ -34,8 +34,6 @@ export default function AnggotaEkskul() {
           <FaFilter className="cursor-pointer" />
         </div>
       </div>
-
-      {/* Tabel dengan scroll */}
       <div className="max-h-[400px] overflow-y-auto"> {/* Atur max-height di sini */}
         <table className="w-full text-left text-sm">
           <thead className="sticky top-0 bg-white"> {/* Sticky header */}
@@ -73,8 +71,6 @@ export default function AnggotaEkskul() {
           </tbody>
         </table>
       </div>
-
-      {/* Tombol Tambah */}
       <div className="flex justify-center mt-5">
         <button
           onClick={() => setIsPopupOpen(true)}
