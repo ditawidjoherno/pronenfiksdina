@@ -6,34 +6,58 @@ export default function TambahAnggotaForm({ onAddAnggota, onClose }) {
   const [isOpen, setIsOpen] = useState(true);
   const [kelasList, setKelasList] = useState([]);
   const [namaList, setNamaList] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedKelas, setSelectedKelas] = useState('');
-  const [selectedNama, setSelectedNama] = useState('');
+  const [nisn, setNisn] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
-    // Simulasi fetch data
-    setKelasList(['X IPA 1', 'X IPA 2', 'XI IPS 1']);
-    setNamaList(['Ari', 'Budi', 'Citra', 'Dewi']);
+    fetch("http://localhost:8000/api/siswa-tersedia")
+      .then((res) => res.json())
+      .then((data) => {
+        setKelasList(data.kelasList);
+        setNamaList(data.namaList);
+      })
+      .catch((err) => {
+        console.error("Gagal fetch data siswa tersedia:", err);
+      });
   }, []);
 
-  const handleTambahkan = () => {
-    if (!selectedKelas || !selectedNama) {
-      alert('Kelas dan Nama harus dipilih');
-      return;
+  useEffect(() => {
+    const siswaTerpilih = namaList.find(
+      (s) => s.id.toString() === selectedUserId
+    );
+    if (siswaTerpilih) {
+      setSelectedKelas(siswaTerpilih.kelas || '');
+      setNisn(siswaTerpilih.nisn || '');
+    } else {
+      setSelectedKelas('');
+      setNisn('');
     }
-    setShowConfirm(true);
-  };
+  }, [selectedUserId, namaList]);
 
   const handleConfirmYes = () => {
+    const siswa = namaList.find((s) => s.id.toString() === selectedUserId);
+    if (!siswa) return;
+
     const newAnggota = {
-      id: Date.now(),
-      nama: selectedNama,
-      kelas: selectedKelas
+      nama: siswa.name,
+      kelas: siswa.kelas,
+      nisn: siswa.nisn,
+      user_id: siswa.id,
     };
 
     onAddAnggota(newAnggota);
     setShowConfirm(false);
     onClose();
+  };
+
+  const handleTambahkan = () => {
+    if (!selectedUserId) {
+      alert('Nama siswa harus dipilih');
+      return;
+    }
+    setShowConfirm(true);
   };
 
   return (
@@ -48,34 +72,43 @@ export default function TambahAnggotaForm({ onAddAnggota, onClose }) {
           </button>
           <h2 className="text-lg font-bold text-center mb-4">Tambah Anggota</h2>
 
-          {/* Input Kelas */}
-          <div className="mb-3">
-            <label className="block font-semibold">Pilih Kelas</label>
-            <select
-              className="w-full p-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={selectedKelas}
-              onChange={(e) => setSelectedKelas(e.target.value)}
-            >
-              <option value="">Pilih Kelas</option>
-              {kelasList.map((kelas, index) => (
-                <option key={index} value={kelas}>{kelas}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Input Nama */}
+          {/* Dropdown Nama Siswa */}
           <div className="mb-3">
             <label className="block font-semibold">Pilih Nama Siswa</label>
             <select
               className="w-full p-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={selectedNama}
-              onChange={(e) => setSelectedNama(e.target.value)}
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
             >
               <option value="">Pilih Nama</option>
-              {namaList.map((nama, index) => (
-                <option key={index} value={nama}>{nama}</option>
+              {namaList.map((siswa) => (
+                <option key={siswa.id} value={siswa.id}>
+                  {siswa.name}
+                </option>
               ))}
             </select>
+          </div>
+
+          {/* Kelas - Tampilkan otomatis */}
+          <div className="mb-3">
+            <label className="block font-semibold">Kelas</label>
+            <input
+              type="text"
+              value={selectedKelas}
+              readOnly
+              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          {/* NISN - Tampilkan otomatis */}
+          <div className="mb-3">
+            <label className="block font-semibold">NISN</label>
+            <input
+              type="text"
+              value={nisn}
+              readOnly
+              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-lg"
+            />
           </div>
 
           {/* Tombol Tambahkan */}
@@ -87,11 +120,13 @@ export default function TambahAnggotaForm({ onAddAnggota, onClose }) {
           </button>
         </div>
 
-        {/* Pop-up Konfirmasi */}
+        {/* Modal Konfirmasi */}
         {showConfirm && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
-              <p className="mb-4 font-semibold">Anda yakin ingin menambahkan siswa tersebut?</p>
+              <p className="mb-4 font-semibold">
+                Anda yakin ingin menambahkan siswa tersebut?
+              </p>
               <div className="flex justify-center gap-4">
                 <button
                   onClick={handleConfirmYes}
