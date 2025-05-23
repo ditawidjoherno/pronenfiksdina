@@ -78,7 +78,7 @@ const Sidebar = () => {
                 pathname === item.path ||
                 (item.path === "/beranda" && pathname.startsWith("/beranda/siswa")) ||
                 (item.path === "/absensi" && pathname.startsWith("/absensi")) ||
-                (item.path === "/ekskul" && pathname.startsWith("/ekskul/isiekskul")) ||
+                (item.path === "/ekskul" && pathname.startsWith("/ekskul/")) ||
                 (item.path === "/piket" && pathname.startsWith("/Inputpiket")) ||
                 (item.path === "/studytour" && (
                   pathname.startsWith("/detailevent") ||

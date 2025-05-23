@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Header from '@/app/_components/Header';
 import Sidebar from '@/app/_components/Sidebar';
 import { FaArrowLeft } from "react-icons/fa";
@@ -13,8 +14,26 @@ import AchievementBox from './_components/Kejuaraan';
 
 
 export default function EkskulDetail() {
-  const { name } = useParams();
   const router = useRouter();
+  const { name } = useParams(); // dari URL
+  const [ekskulId, setEkskulId] = useState(null);
+  const [ekskulName, setEkskulName] = useState('');
+
+    useEffect(() => {
+    const fetchEkskul = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/ekskul/by-name/${name}`);
+        const data = await res.json();
+        setEkskulId(data.id);        // simpan ID
+        setEkskulName(data.name);    // simpan nama ekskul asli dari database
+      } catch (err) {
+        console.error("❌ Gagal ambil ekskul:", err);
+      }
+    };
+
+    if (name) fetchEkskul();
+  }, [name]);
+
 
   return (
     <div className="flex flex-col h-screen">
@@ -63,7 +82,7 @@ export default function EkskulDetail() {
               <EkskulChart />
             </div>
             <div className="flex-1">
-              <AchievementBox />
+              {ekskulId && <AchievementBox ekskulId={ekskulId} />}
             </div>
           </div>
           

@@ -60,7 +60,7 @@ export default function EkskulList() {
   const handleMasukClick = async (ekskul) => {
     const updatedEkskul = await fetchEkskulById(ekskul.id);
     localStorage.setItem("selectedEkskul", JSON.stringify(updatedEkskul));
-    router.push("/ekskul/isiekskul");
+    router.push(`/ekskul/${ekskul.name.toLowerCase().replace(/\s+/g, '')}`);
   };
 
   const handleAddEkskul = (newEkskul) => {
