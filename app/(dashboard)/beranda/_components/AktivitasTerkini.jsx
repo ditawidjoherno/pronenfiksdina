@@ -8,7 +8,7 @@ const RecentActivity = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/recent-activity", {
+        const response = await fetch("http://localhost:8000/api/recent-activity", {
           headers: {
             "Content-Type": "application/json",
             // Jika endpoint dilindungi oleh JWT:

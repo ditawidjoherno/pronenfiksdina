@@ -36,15 +36,15 @@ export default function AnggotaEkskul() {
       </div>
       <div className="max-h-[400px] overflow-y-auto"> {/* Atur max-height di sini */}
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-white"> {/* Sticky header */}
-            <tr className="text-gray-700 border-b mt-10">
-              <th className="py-3 w-12 pl-4">No</th>
-              <th className="text-center w-40">Nama</th>
-              <th className="text-center w-32">NISN</th>
-              <th className="text-center w-20">Kelas</th>
-              <th className="w-6"></th>
-            </tr>
-          </thead>
+          <thead className="sticky top-0 bg-white">
+  <tr className="text-gray-700 border-b mt-10">
+    <th className="py-3 w-12 pl-4">No</th>
+    <th className="text-center w-40">Nama</th>
+    <th className="text-center w-32">NISN</th>
+    <th className="text-center w-20">Kelas</th>
+    <th className="w-6"></th>
+  </tr>
+</thead>
           <tbody>
             {anggotaEkskul.map((anggota, index) => (
               <tr key={anggota.id} className="border-b">
