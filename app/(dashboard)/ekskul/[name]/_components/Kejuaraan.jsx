@@ -67,7 +67,7 @@ const AchievementBox = ({ ekskulId }) => {
           <FaPlus /> Tambah Prestasi
         </button>
       </div>
-      <div className="grid gap-4">
+      <div className="grid gap-4 max-h-[350px] overflow-y-auto pr-2">
         {Array.isArray(achievements) &&
           achievements.map((achieve, index) => (
             <div key={index} className="border border-yellow-500 shadow-md rounded-lg p-4 bg-white relative">
