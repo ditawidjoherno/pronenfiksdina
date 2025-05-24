@@ -11,39 +11,48 @@ export default function AnggotaEkskul() {
   const [anggotaToDelete, setAnggotaToDelete] = useState(null);
 
   const fetchAnggotaEkskul = async () => {
-    try {
-      const res = await fetch(`http://localhost:8000/api/ekskul/1/anggota`, {
-        headers: { Accept: "application/json" },
-      });
-      const data = await res.json();
-      setAnggotaEkskul(data);
-    } catch (err) {
-      console.error("❌ Gagal fetch anggota ekskul:", err);
-    }
-  };
+  const ekskul = JSON.parse(localStorage.getItem("selectedEkskul"));
+  const ekskulId = ekskul?.id;
+
+  if (!ekskulId) return;
+
+  try {
+    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
+      headers: { Accept: "application/json" },
+    });
+    const data = await res.json();
+    setAnggotaEkskul(data);
+  } catch (err) {
+    console.error("❌ Gagal fetch anggota ekskul:", err);
+  }
+};
 
   useEffect(() => {
-    fetchAnggotaEkskul();
-  }, []);
+  fetchAnggotaEkskul();
+}, []);
 
   const handleAddAnggota = async (anggotaBaru) => {
-    try {
-      const res = await fetch(`http://localhost:8000/api/ekskul/1/anggota`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify(anggotaBaru),
-      });
+  const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
+  if (!ekskulId) return;
 
-      if (!res.ok) throw new Error("Gagal menambahkan anggota");
-      await fetchAnggotaEkskul();
-    } catch (err) {
-      console.error("❌ Error saat tambah anggota:", err);
-      alert("Gagal menambahkan anggota. Cek konsol.");
-    }
-  };
+  try {
+    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(anggotaBaru),
+    });
+
+    if (!res.ok) throw new Error("Gagal menambahkan anggota");
+    await fetchAnggotaEkskul();
+  } catch (err) {
+    console.error("❌ Error saat tambah anggota:", err);
+    alert("Gagal menambahkan anggota. Cek konsol.");
+  }
+};
+
 
   const confirmDeleteAnggota = (anggota) => {
     setAnggotaToDelete(anggota);
@@ -100,13 +109,15 @@ export default function AnggotaEkskul() {
             {anggotaEkskul.map((anggota, index) => (
               <tr key={anggota.id} className="border-b">
                 <td className="py-4 text-center">{index + 1}.</td>
-                <td className="py-4 flex items-center gap-3">
-                  <img
-                    src="/images/profilsiswa.jpg"
-                    alt="avatar"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span>{anggota.nama}</span>
+                <td className="py-4 text-left">
+  <div className="flex items-center gap-3">
+                    <img
+                      src="/images/profilsiswa.jpg"
+                      alt="avatar"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="font-medium">{anggota.nama}</span>
+                  </div>
                 </td>
                 <td className="py-4 text-center">{anggota.nisn || '-'}</td>
                 <td className="py-4 text-center">{anggota.kelas}</td>

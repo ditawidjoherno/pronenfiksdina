@@ -8,6 +8,35 @@ export default function FormInformasi() {
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
 
+  const handleSubmit = async () => {
+  const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
+  if (!ekskulId) return;
+
+  const payload = {
+    date,
+    description,
+    author: "Admin",
+    time: "17:00",
+    color: "bg-blue-600"
+  };
+
+  try {
+    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/informasi`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    console.log("✅ Berhasil tambah:", data);
+    window.location.reload(); // atau panggil callback jika kamu mau tanpa reload
+
+  } catch (err) {
+    console.error("❌ Gagal menambah informasi:", err);
+  }
+};
+
+
   return (
     <div className="p-6 w-96 rounded-lg ">
       <h2 className="text-lg font-bold">Tambah Informasi</h2>
@@ -42,12 +71,11 @@ export default function FormInformasi() {
         *Isi deskripsi dapat disesuaikan dengan informasi yang diberikan. Anda dapat memperbarui atau mengeditnya sesuai kebutuhan jika terjadi kekeliruan.
       </p>
 
-      <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg flex justify-center items-center">
-        <div className="mr-2 ">
-            <AiOutlineUpload className='h-6 w-6'/>
-        </div> 
-        Unggah
-      </button>
+      <button onClick={handleSubmit} className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg flex justify-center items-center">
+  <AiOutlineUpload className='h-6 w-6 mr-2' />
+  Unggah
+</button>
+
     </div>
   );
 }
