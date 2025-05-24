@@ -11,7 +11,7 @@ import EkskulChart from './_components/Ekskulchart';
 import AnggotaEkskul from './_components/AnggotaEkskul';
 import InformasiEkskul from './_components/Informasieks';
 import AchievementBox from './_components/Kejuaraan';
-
+import KegiatanEksCard from './_components/EkskulKegiatan';
 
 export default function EkskulDetail() {
   const router = useRouter();
@@ -62,12 +62,16 @@ export default function EkskulDetail() {
             </div>
           </div>
 
-          <div className="mt-2">
+<div className="mb-2">
+            <KegiatanEksCard />
+          </div>
+
+          <div className="mt-4">
             <EkskulCard />
           </div>
 
           {/* Anggota dan Pengumuman Ekskul dalam satu baris */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex-1">
               <AnggotaEkskul />
             </div>
@@ -77,7 +81,7 @@ export default function EkskulDetail() {
           </div>
 
           {/* Statistik dan Prestasi dalam satu baris */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex-1">
               <EkskulChart />
             </div>
