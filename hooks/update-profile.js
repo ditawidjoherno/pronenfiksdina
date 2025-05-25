@@ -1,97 +1,57 @@
-import axios from "axios";
-import { useState } from "react";
-import { getCookie } from "@/lib/cookieFunction";
+// hooks/update-profile.js
+import axios from 'axios';
+import { useState } from 'react';
 
-const UpdateProfile = () => {
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
-    const cookie = process.env.NEXT_PUBLIC_COOKIE_NAME;
-    const token = getCookie(cookie);
-    const bearerToken = `Bearer ${token}`;
+export default function UpdateProfile() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const updateData = async (body) => {
-        setLoading(true);
-        setError(null);
-        setData(null);
+ const updateData = async ({ nama, email, agama, nomor_hp, password }) => {
+  try {
+    const token = localStorage.getItem('token');
 
-        try {
-            const response = await axios.put("http://localhost:8000/api/edit-profile", body, {
-                headers: {
-                    Authorization: bearerToken
-                }
-            });
+    // Kirim hanya field yang tidak kosong
+    const body = {};
+    if (nama?.trim()) body.nama = nama;
+    if (email?.trim()) body.email = email;
+    if (agama?.trim()) body.agama = agama;
+    if (nomor_hp?.trim()) body.nomor_hp = nomor_hp;
+    if (password?.trim()) body.password = password;
 
-            if (response.status !== 200) {
-                throw new Error(response.data.message || "Gagal Mendapat User");
-            }
+    console.log("📤 Data yang dikirim ke backend:", body);
 
-            setData(response.data);
-            console.log(response);
-        } catch (error) {
-            setError(error.response?.data?.message || error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const updatePassword = async (body) => {
-        setLoading(true);
-        setError(null);
-        setData(null);
-
-        try {
-            const response = await axios.put("https://backend-monitoring-btn-production.up.railway.app/api/password/change", body, {
-                headers: {
-                    Authorization: bearerToken
-                }
-            });
-
-            if (response.status !== 200) {
-                throw new Error(response.data.message || "Gagal Memperbarui Password");
-            }
-
-            setData(response.data);
-            console.log(response);
-        } catch (error) {
-            setError(error.response?.data?.message || error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const updateProfileImage = async (imageFile) => {
-        setLoading(true);
-        setError(null);
-        setData(null);
-    
-        try {
-            const formData = new FormData();
-            formData.append('foto_profil', imageFile);
-    
-            const response = await axios.post("https://backend-monitoring-btn-production.up.railway.app/api/update-profile-image", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: bearerToken
-                }
-            });
-    
-            if (response.status !== 200) {
-                throw new Error(response.data.message || "Gagal Mengupload Foto Profil");
-            }
-    
-            setData(response.data);
-            console.log(response);
-        } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message);
-            setError(error.response?.data?.message || error.message); 
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-
-    return { loading, error, data, updateData, updatePassword, updateProfileImage };
+    await axios.put('http://localhost:8000/api/edit-profile', body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (err) {
+    console.error("❌ Gagal update profil:", err.response?.status, err.response?.data);
+  }
 };
 
-export default UpdateProfile;
+
+const updateProfileImage = async (imageFile) => {
+  try {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('foto_profil', imageFile);
+
+    const res = await axios.post('http://localhost:8000/api/upload-foto-profil', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log("✅ Foto berhasil diunggah:", res.data);
+    return res.data.data;
+  } catch (err) {
+    console.error("❌ Gagal upload gambar:", err);
+    return null;
+  }
+};
+
+  return { loading, error, updateData, updateProfileImage };
+}
