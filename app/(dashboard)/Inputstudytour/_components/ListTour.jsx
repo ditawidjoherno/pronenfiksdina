@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import GenerateButton from './buttongen';
 
 const students = [
   { id: 1, name: 'Akio Anak Baik Sekali' },
@@ -77,8 +78,10 @@ export default function ListForm() {
         <div className="flex"><strong className="w-28">Biaya</strong> <span>: {cost}</span></div>
         <div className="flex"><strong className="w-28">Mulai</strong> <span>: {startDate}</span></div>
         <div className="flex"><strong className="w-28">Selesai</strong> <span>: {endDate}</span></div>
+       <div className="mb-2 flex justify-start">
+  <GenerateButton />
+</div>
       </div>
-
       <table className="w-full border-t border-gray-300">
         <thead>
           <tr className="border-b border-gray-300">
