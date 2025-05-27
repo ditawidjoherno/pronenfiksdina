@@ -1,10 +1,10 @@
-// InformasiList.jsx (versi final terhubung ke Laravel backend)
 'use client';
 
 import { useState, useEffect } from 'react';
 import { FaBell, FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import GreenButton from './TombolTambah';
+import { useSession } from 'next-auth/react';
 
 Modal.setAppElement(typeof document !== 'undefined' ? document.body : null);
 
@@ -14,6 +14,7 @@ export default function InformasiList() {
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState('');
+  const { data: session } = useSession();
 
   const API_BASE = 'http://localhost:8000/api/informasi';
 
@@ -61,10 +62,21 @@ export default function InformasiList() {
   };
 
   const handleAddInfo = async (newInfo) => {
+   console.log("✅ Session user:", session?.user); // Debug
+
+const finalInfo = {
+  ...newInfo,
+  author: session?.user?.name || 'Admin Sistem',
+  foto_profil: session?.user?.image || 'default.jpg',
+};
+
+console.log("📦 Data dikirim ke backend:", finalInfo); // Debug
+
+
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(newInfo),
+      body: JSON.stringify(finalInfo),
     });
 
     const created = await res.json();
@@ -72,6 +84,7 @@ export default function InformasiList() {
   };
 
   const getShortText = (text) => {
+    if (typeof text !== 'string') return '-';
     const words = text.split(' ');
     return words.length > 8 ? words.slice(0, 8).join(' ') + '...' : text;
   };
@@ -84,7 +97,7 @@ export default function InformasiList() {
         </h2>
         <GreenButton onAddInfo={handleAddInfo} />
       </div>
-      <div className="mt-4 space-y-3">
+      <div className={`mt-4 space-y-3 ${informasiData.length > 2 ? 'max-h-[200px] overflow-y-auto pr-1' : ''}`}>
         {informasiData.map((info) => (
           <div
             key={info.id}
@@ -97,8 +110,12 @@ export default function InformasiList() {
             <h3 className="text-gray-800 font-bold mt-2">{info.title}</h3>
             <p className="mt-2 text-gray-700 font-medium">{getShortText(info.text)}</p>
             <div className="mt-2 text-gray-500 text-sm flex items-center">
-              <img src="images/profil.jpg" alt="User" className="w-5 h-5 rounded-full mr-2" />
-              {info.author} / {info.time}
+              <img
+                src={`http://localhost:8000/storage/${info.foto_profil || 'default.jpg'}`}
+                alt="User"
+                className="w-5 h-5 rounded-full mr-2"
+              />
+              {info?.author?.trim() || 'Anonim'} / {info?.time?.trim() || '-'}
             </div>
           </div>
         ))}
@@ -126,7 +143,11 @@ export default function InformasiList() {
                 <p className="text-gray-700 mb-4">{selectedInfo.text}</p>
               )}
               <div className="text-sm text-gray-500 flex items-center">
-                <img src="images/profil.jpg" alt="User" className="w-6 h-6 rounded-full mr-2" />
+                <img
+                  src={`http://localhost:8000/storage/${selectedInfo.foto_profil || 'default.jpg'}`}
+                  alt="User"
+                  className="w-6 h-6 rounded-full mr-2"
+                />
                 {selectedInfo.author} / {selectedInfo.time}
               </div>
               <div className="mt-4 flex justify-end space-x-2">

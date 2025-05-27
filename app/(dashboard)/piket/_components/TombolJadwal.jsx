@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { AiFillBell } from "react-icons/ai";
 import JadwalPiketPopup from "./JadwalPiket";
+import { AiFillBell } from "react-icons/ai";
 
-export default function ButtonJadwalPiket() {
+export default function ButtonJadwalPiket({ onSimpan }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -14,7 +14,13 @@ export default function ButtonJadwalPiket() {
         <AiFillBell size={24} />
         Atur Jadwal Piket
       </button>
-      {isOpen && <JadwalPiketPopup onClose={() => setIsOpen(false)} />}
+
+      {isOpen && (
+        <JadwalPiketPopup
+          onClose={() => setIsOpen(false)} // ✅ ini penting!
+          onSimpan={onSimpan}              // ✅ kirim juga ke bawah
+        />
+      )}
     </>
   );
 }

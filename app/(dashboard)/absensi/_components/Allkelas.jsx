@@ -6,9 +6,9 @@ import { FaBook } from "react-icons/fa";
 import AddClassButton from "./tombolkelas";
 
 const initialClasses = [
-  "X A", "X B", "X C",
-  "X D", "XI A", "XI B", "XI C", "XI D",
-  "XII A", "XII D", "XII C", "XII D", "XII IBBU"
+  "X-A", "X-B", "X-C",
+  "XI-A", "XI-B", "XI-C",
+  "XII-A", "XII-B", "XII-C" // Tambahkan kelas sesuai kebutuhan
 ];
 
 const ClassCards = () => {

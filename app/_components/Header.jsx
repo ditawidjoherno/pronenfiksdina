@@ -32,7 +32,7 @@ const Header = () => {
  src={
   data?.foto_profil
     ? `http://localhost:8000/storage/${data.foto_profil}?t=${Date.now()}`
-    : "/images/profil.jpg"
+    : "/images/profil.png"
 }
   alt="Profile"
   className="w-8 h-8 rounded-full object-cover"

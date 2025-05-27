@@ -14,7 +14,7 @@ const BoxWelcome = () => {
           <img
             src="/images/siswabox.png" // Ganti dengan path gambar yang sesuai
             alt="guru"
-            className="w-[220px] h-[220px] object-contain ml-8" // Ukuran diperbesar
+            className="w-[200px] h-[200px] object-contain ml-8" // Ukuran diperbesar
           />
 
           {/* Right Content (Text) */}

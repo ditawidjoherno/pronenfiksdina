@@ -41,7 +41,7 @@ export default function ProfileCard() {
   src={
     profile?.foto_profil
       ? `http://localhost:8000/storage/${profile.foto_profil}?t=${lastUpdate}`
-      : "/images/profil.jpg"
+      : "/images/profil.png"
   }
   alt="Profile"
   width={220}

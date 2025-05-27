@@ -1,12 +1,41 @@
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-export default function JadwalPiketPopup({ onClose }) {
+export default function JadwalPiketPopup({ onClose, onSimpan }) {
   const [tanggal, setTanggal] = useState("");
   const [kelas, setKelas] = useState("");
-  const [kirimInfo, setKirimInfo] = useState(false);
 
   const kelasOptions = ["X-A", "X-B", "X-C", "XI-A", "XI-B"];
+
+  const handleSubmit = async () => {
+    if (!tanggal || !kelas) {
+      alert("Tanggal dan kelas wajib diisi!");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/api/piket-card", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tanggal, kelas }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+  alert(data.message);
+  if (onSimpan) onSimpan(); // ✅ trigger refresh
+  onClose();
+      } else {
+        alert(data.message || "Gagal menyimpan jadwal piket");
+      }
+    } catch (err) {
+      console.error("Gagal kirim:", err);
+      alert("Terjadi kesalahan saat mengirim data.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -40,17 +69,10 @@ export default function JadwalPiketPopup({ onClose }) {
             ))}
           </select>
         </div>
-        <div className="mt-4 flex items-center">
-          <input
-            type="checkbox"
-            checked={kirimInfo}
-            onChange={() => setKirimInfo(!kirimInfo)}
-            className="mr-2"
-          />
-          <label>Kirim Informasi kepada siswa</label>
-        </div>
+
         <button
           className="mt-4 w-full bg-green-600 text-white p-2 rounded"
+          onClick={handleSubmit}
         >
           Selesai
         </button>

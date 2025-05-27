@@ -4,19 +4,19 @@ import { useState, useEffect } from 'react';
 import { FaBell, FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import GreenButton from './TombolTambah';
-import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react'; // ✅ DITAMBAHKAN
 import { parseISO, format } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 
 Modal.setAppElement(typeof document !== 'undefined' ? document.body : null);
 
-export default function InformasiList() {
+export default function listInform() {
   const [informasiData, setInformasiData] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState('');
-  const { data: session } = useSession();
+  const { data: session } = useSession(); // ✅ DITAMBAHKAN
 
   const API_BASE = 'http://localhost:8000/api/informasi';
 
@@ -66,10 +66,13 @@ export default function InformasiList() {
   };
 
   const handleAddInfo = async (newInfo) => {
+    console.log("📦 session.user:", session?.user); // ✅ DEBUG
     const finalInfo = {
       ...newInfo,
-      author: session?.user?.name?.trim() || 'Admin Sistem',
+      author: session?.user?.name?.trim() || 'Admin Sistem', // ✅ PERBAIKAN
     };
+
+    console.log("📦 finalInfo dikirim:", finalInfo); // ✅ DEBUG
 
     const res = await fetch(API_BASE, {
       method: 'POST',
@@ -80,6 +83,9 @@ export default function InformasiList() {
     const created = await res.json();
     setInformasiData((prev) => [created, ...prev]);
   };
+
+  // 👇 bagian lain tidak diubah
+
 
   const getShortText = (text) => {
     if (typeof text !== 'string') return '-';
@@ -104,8 +110,11 @@ export default function InformasiList() {
         <GreenButton onAddInfo={handleAddInfo} />
       </div>
 
-      <div className="mt-4 space-y-3">
-        {informasiData.map((info, index) => (
+      <div className={`mt-4 space-y-3 ${
+    informasiData.length > 2 ? 'max-h-[350px] overflow-y-auto pr-1' : ''
+  }`}
+>
+  {informasiData.map((info) => (
           <div
             key={info.id || index}
             className="p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"

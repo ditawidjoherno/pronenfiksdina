@@ -74,20 +74,29 @@ const Sidebar = () => {
           {menuItems.map((item, index) => (
             <li
               key={index}
-              className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${
-                pathname === item.path ||
-                (item.path === "/beranda" && pathname.startsWith("/beranda/siswa")) ||
-                (item.path === "/absensi" && pathname.startsWith("/absensi")) ||
-                (item.path === "/ekskul" && pathname.startsWith("/ekskul/")) ||
-                (item.path === "/piket" && pathname.startsWith("/Inputpiket")) ||
-                (item.path === "/studytour" && (
-                  pathname.startsWith("/detailevent") ||
-                  pathname.startsWith("/riwayattour") ||
-                  pathname.startsWith("/Inputstudytour"))
-                )
-                  ? "bg-[#728cd3]"
-                  : "hover:bg-[#3f84d8]"
-              }`}
+className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${
+  pathname === item.path ||
+  (item.path === "/beranda" && pathname.startsWith("/beranda/siswa")) ||
+  (item.path === "/absensi" && (
+    pathname.startsWith("/Inputabsensi") ||
+    pathname.startsWith("/ringkasanabsensi") ||
+    pathname.startsWith("/detailabsensi")
+  )) ||
+  (item.path === "/ekskul" && pathname.startsWith("/ekskul/")) ||
+  (item.path === "/piket" && (
+    pathname.startsWith("/Inputpiket") ||
+    pathname.startsWith("/AbsensiPiket")
+  )) ||
+  (item.path === "/studytour" && (
+    pathname.startsWith("/detailevent") ||
+    pathname.startsWith("/riwayattour") ||
+    pathname.startsWith("/Inputstudytour")
+  )) ||
+  (item.path === "/detailabsensi" && pathname.startsWith("/detailabsensi"))
+    ? "bg-[#728cd3]"
+    : "hover:bg-[#3f84d8]"
+}`}
+
               onClick={() => handleMenuClick(item.path)}
             >
               <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
