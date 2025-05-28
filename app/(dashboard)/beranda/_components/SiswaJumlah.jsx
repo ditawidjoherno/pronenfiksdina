@@ -75,12 +75,13 @@ export default function StudentPopup({ onClose }) {
                     <td className="p-3">{index + 1}.</td>
                     <td className="p-3 flex items-center gap-2">
                       <Image
-                        src="/images/profilsiswa.jpg"
-                        alt="Avatar"
-                        width={28}
-                        height={28}
-                        className="rounded-full border"
-                      />
+  src={student.foto_profil || '/images/profilsiswa.jpg'}
+  alt="Avatar"
+  width={28}
+  height={28}
+  className="rounded-full border"
+  unoptimized
+/>
                       {student.nama || '-'}
                     </td>
                     <td className="p-3">{student.nisn || '-'}</td>

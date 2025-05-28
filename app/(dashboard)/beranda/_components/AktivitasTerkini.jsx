@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FaClock, FaChevronDown } from "react-icons/fa";
+import dayjs from "dayjs";
+import "dayjs/locale/id"; // import bahasa Indonesia
+import localizedFormat from "dayjs/plugin/localizedFormat"; // untuk format seperti "Senin, 27 Mei 2025"
+
+dayjs.extend(localizedFormat);
+dayjs.locale("id"); // set bahasa Indonesia
 
 const RecentActivity = () => {
   const [activities, setActivities] = useState([]);
@@ -62,7 +68,10 @@ const RecentActivity = () => {
   <tbody>
     {activities.map((activity, index) => (
       <tr key={index} className="border-b text-gray-700 text-center">
-        <td className="py-3 px-4 w-[130px]">{activity.date}</td>
+        <td className="py-3 px-4 w-[130px] font-semibold">
+  {dayjs(activity.date).format("dddd, DD MMMM YYYY")}
+</td>
+
         <td className="py-3 px-4 w-[100px]">{activity.time}</td>
        <td className="py-3 px-2 w-[200px]">
   <div className="flex items-center justify-center gap-2">
@@ -85,14 +94,6 @@ const RecentActivity = () => {
     </div>
   )}
 </div>
-
-
-      <div className="text-center text-base text-black mt-3">
-        <button className="hover:underline font-semibold">See More</button>
-        <div className="flex justify-center mt-1 text-gray-500">
-          <FaChevronDown className="text-lg" />
-        </div>
-      </div>
     </div>
   );
 };

@@ -81,7 +81,14 @@ export default function TeacherPopup({ onClose }) {
                     <tr key={teacher.id} className="border-b hover:bg-gray-50 transition">
                       <td className="p-3">{index + 1}.</td>
                       <td className="p-3 flex items-center gap-2">
-                        <Image src="/images/profilsiswa.jpg" alt="Avatar" width={28} height={28} className="rounded-full border" />
+                        <Image
+  src={teacher.foto_profil || '/images/profilguru.jpg'} // pakai foto_profil dari API, fallback foto default guru
+  alt="Avatar"
+  width={28}
+  height={28}
+  className="rounded-full border"
+  unoptimized
+/>
                         {teacher.nama || '-'}
                       </td>
                       <td className="p-3">{teacher.nip || '-'}</td>

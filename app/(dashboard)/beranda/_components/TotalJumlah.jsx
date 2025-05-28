@@ -68,7 +68,14 @@ export default function TotalPopup({ onClose }) {
                 <tr key={student.id} className="border-b hover:bg-gray-50 transition">
                   <td className="p-3">{index + 1}.</td>
                   <td className="p-3 flex items-center gap-2">
-                    <Image src="/images/profilsiswa.jpg" alt="Avatar" width={28} height={28} className="rounded-full border" />
+                    <Image
+  src={student.foto_profil || '/images/profilsiswa.jpg'}
+  alt="Avatar"
+  width={28}
+  height={28}
+  className="rounded-full border"
+  unoptimized
+/>
                     {student.name}
                   </td>
                   <td className="p-3">
