@@ -41,14 +41,31 @@ const Sidebar = () => {
     router.push(path);
     localStorage.setItem("sidebarCollapsed", isCollapsed);
   };
+  
 
   // Filter menu untuk role siswa
-  const menuItems = allMenuItems.filter(item => {
+  const menuItems = allMenuItems
+  .map(item => {
+    // Ubah path untuk menu "Absensi" jika role siswa
+    if (item.name === "Absensi" && role === "siswa") {
+      return { ...item, path: "/absensi/siswa" };
+    }
+    if (item.name === "Ekskul" && role === "siswa") {
+      return { ...item, path: "/ekskulsiswa" };
+    }
+    if (item.name === "Piket" && role === "siswa") {
+      return { ...item, path: "/piket/siswa" };
+    }
+    return item;
+  })
+  .filter(item => {
+    // Sembunyikan menu tertentu jika role siswa
     if (role === "siswa" && (item.name === "Tambah Akun" || item.name === "Kegiatan")) {
       return false;
     }
     return true;
   });
+
 
   return (
     <div className={`flex flex-col h-screen ${isCollapsed ? 'w-20' : 'w-64'} bg-[#98abe2] drop-shadow-lg text-white transition-width duration-700 ease-in-out relative z-50`}> 
@@ -77,12 +94,16 @@ const Sidebar = () => {
 className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${
   pathname === item.path ||
   (item.path === "/beranda" && pathname.startsWith("/beranda/siswa")) ||
+  (item.path === "/absensi" && pathname.startsWith("/absensi/siswa")) ||
   (item.path === "/absensi" && (
     pathname.startsWith("/Inputabsensi") ||
     pathname.startsWith("/ringkasanabsensi") ||
     pathname.startsWith("/detailabsensi")
   )) ||
-  (item.path === "/ekskul" && pathname.startsWith("/ekskul/")) ||
+ (
+  (item.path === "/ekskul" || item.path === "/ekskulsiswa") &&
+  (pathname.startsWith("/ekskul/") || pathname.startsWith("/ekskulsiswa/"))
+) ||
   (item.path === "/piket" && (
     pathname.startsWith("/Inputpiket") ||
     pathname.startsWith("/AbsensiPiket")

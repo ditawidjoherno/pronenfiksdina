@@ -1,34 +1,59 @@
 "use client";
-import React from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
-import AbsensiAlert from "./_components/AllertBox";
 import AbsensiForm from "./_components/AbsensiForm";
+import AbsensiAlert from "./_components/AllertBox";
 import StudentCard from "./_components/KehadiranBulanan";
+import AttendanceTable from "./_components/RiwayatSiswa";
 
-export default function Absensi() {
+export default function AbsensiSiswaPage() {
+  const router = useRouter();
+  const [isAllowed, setIsAllowed] = useState(null); // null = loading
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    
+    if (userData?.role === "siswa") {
+      setIsAllowed(true);
+    } else {
+      setIsAllowed(false);
+      router.push("/unauthorized"); // atau ke "/beranda"
+    }
+  }, []);
+
+  if (isAllowed === null) {
+    return <p className="text-center p-4">Memuat halaman absensi...</p>;
+  }
+
+  if (!isAllowed) {
+    return null; // atau tampilkan spinner
+  }
+
   return (
-    <div className="flex h-screen overflow-hidden"> {/* Background diatur di sini */}
+    <div className="flex h-screen overflow-hidden">
       <Header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md" />
-
       <Sidebar />
 
-      {/* Tambahkan area konten utama jika diperlukan */}
-      <main className="flex-1 p-4 bg-gray-200 overflow-y-auto ">
-        <h1 className="text-3xl text-black font-bold w-full max-w-6xl mb-4 mt-14">Absensi Apel Pagi</h1>
+      <main className="flex-1 p-4 bg-gray-200 overflow-y-auto">
+        <h1 className="text-3xl font-bold mt-14 mb-6 text-black">Absensi Apel Pagi</h1>
 
-        <div className="mt-5">
-         <StudentCard/>
+        <div className="mb-4">
+          <StudentCard />
         </div>
 
-        <div className="mt-2">
-          <AbsensiAlert/>
+        <div className="mb-4">
+          <AttendanceTable />
         </div>
 
-        <div className="mt-6">
-         <AbsensiForm/>
+        <div className="mb-4">
+          <AbsensiAlert />
         </div>
 
+        <div>
+          <AbsensiForm />
+        </div>
       </main>
     </div>
   );

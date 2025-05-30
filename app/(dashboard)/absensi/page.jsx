@@ -5,6 +5,7 @@ import Header from "@/app/_components/Header";
 import AttendanceStats from "./_components/kehadiranstatis";
 import ClassCards from "./_components/Allkelas";
 
+
 export default function Absensi() {
   return (
     <div className="flex h-screen overflow-hidden"> {/* Background diatur di sini */}

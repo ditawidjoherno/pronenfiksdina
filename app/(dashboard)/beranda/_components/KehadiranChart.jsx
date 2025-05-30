@@ -72,13 +72,14 @@ const KehadiranChart = () => {
       tooltip: { enabled: true },
     },
     scales: {
-  y: {
-    ticks: {
-      color: "#000",
-      // Contoh kalikan nilai tick dengan 10 saat tampil:
-      callback: function(value) {
-        return value * 10;
-      }
+ y: {
+  beginAtZero: true,
+  suggestedMax: 30, // Coba tampilkan hingga 60, tapi masih fleksibel jika ada data lebih
+  ticks: {
+    stepSize: 5,
+    callback: function (value) {
+      return Number.isInteger(value) ? value : null;
+    },
     },
     grid: { color: "rgba(0, 0, 0, 0.2)" },
   },

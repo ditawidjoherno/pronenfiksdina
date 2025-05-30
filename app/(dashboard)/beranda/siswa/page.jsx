@@ -4,9 +4,10 @@ import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
 import BoxWelcome from "../_components/BoxWelcome";
 import InformasiList from "./_components/InformasiUmum";
-import Reminder from "./_components/Reminder";
 import EventCalendar from "./_components/KalenderSiswa";
 import dynamic from "next/dynamic"; // <== Tambahkan ini
+import HarianAbsensi from "./_components/SekilasAbsen";
+import DaftarEkskul from "./_components/SekilasEkskul";
 
 const AttendanceChart = dynamic(() => import("./_components/GrafikKehadiran"), {
   ssr: false,
@@ -41,13 +42,13 @@ export default function Beranda() {
           <div className="w-1/2">
             <InformasiList/>
           </div>
-          <div className="w-1/2">
-            <Reminder/>
-          </div>
+           <div className="w-1/2 mt-2">
+    <HarianAbsensi />
+  </div> 
         </div>
         <div className="flex max-w-6xl mx-auto gap-4 mt-4">
   <div className="w-1/2">
-    <AttendanceChart />
+    <DaftarEkskul />
   </div>
   <div className="w-1/2">
     <EventCalendar />

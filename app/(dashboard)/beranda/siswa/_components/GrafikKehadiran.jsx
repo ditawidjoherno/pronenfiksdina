@@ -32,7 +32,7 @@ function getFormattedDate() {
 export default function AttendanceChart() {
   return (
     <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-md p-4 text-center mt-5">
-      <h2 className="text-lg font-bold mb-1">Grafik Kehadiran</h2>
+      <h2 className="text-lg font-bold mb-1">Grafik Kehadiran Apel Pagi</h2>
       <p className="text-sm text-gray-600 mb-4">{getFormattedDate()}</p>
 
       <PieChart width={250} height={250} className="mx-auto">

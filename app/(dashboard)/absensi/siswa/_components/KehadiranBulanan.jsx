@@ -75,9 +75,6 @@ export default function StudentCard() {
       </div>
 
       {/* Tombol Tampilkan Detail */}
-      <button className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200">
-        Tampilkan Detail
-      </button>
     </div>
   );
 }
