@@ -10,7 +10,7 @@ const studentData = [
   { id: 7, nisn: "5566778899", name: "Olivia Carter Sophia", class: "X-A", time: "08:30 AM", date: "01, Jan 2025" },
 ];
 
-const IkutSertaSiswa = () => {
+const StudentParticipation = () => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -68,4 +68,4 @@ const IkutSertaSiswa = () => {
   );
 };
 
-export default IkutSertaSiswa;
+export default StudentParticipation;

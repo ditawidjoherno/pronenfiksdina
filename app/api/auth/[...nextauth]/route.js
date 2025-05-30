@@ -42,20 +42,22 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
 
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.name = user.name;
-        token.email = user.email;
-        token.image = user.image; // ✅ WAJIB ADA
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.name = token.name;
-      session.user.email = token.email;
-      session.user.image = token.image; // ✅ WAJIB ADA
-      return session;
-    },
+  async jwt({ token, user }) {
+    if (user) {
+      token.name = user.name;
+      token.email = user.email;
+      token.image = user.image; // ← ini dari `authorize()` saat login
+    }
+    return token;
+  },
+  async session({ session, token }) {
+    session.user.name = token.name;
+    session.user.email = token.email;
+    session.user.image = token.image;
+    session.user.foto_profil = token.image;
+     // ✅ PENTING: Tambahkan baris ini
+    return session;
+  },
   },
 
   secret: process.env.NEXTAUTH_SECRET,

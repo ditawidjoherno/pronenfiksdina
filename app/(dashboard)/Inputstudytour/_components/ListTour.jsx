@@ -363,7 +363,7 @@ const handleAttendanceChange = (nisn, status) => {
       return () => clearInterval(intervalId);
     }, [endTime]);
 
-  return (
+   return (
     <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white">
       <style>
         {`
@@ -375,20 +375,23 @@ const handleAttendanceChange = (nisn, status) => {
       </style>
 
       <div className="mb-4 space-y-2 text-md">
-        <div className="flex"><strong className="w-28">Kelas</strong> <span>: {kelas}</span>
-</div>
+        <div className="flex">
+          <strong className="w-28">Kelas</strong> <span>: {kelas}</span>
+        </div>
         <div className="flex">
           <strong className="w-28">Hari</strong> <span>: {formatDateWithDay(formData.date) || "-"}</span>
         </div>
-        <div className="flex">
+        {/* Tujuan Dihapus */}
+        {/* <div className="flex">
           <strong className="w-28">Tujuan</strong> <span>: {formData.destination || "-"}</span>
-        </div>
+        </div> */}
         <div className="flex">
           <strong className="w-28">Biaya</strong> <span>: {formData.cost || "-"}</span>
         </div>
-        <div className="flex">
+        {/* Mulai Dihapus */}
+        {/* <div className="flex">
           <strong className="w-28">Mulai</strong> <span>: {formData.start || "-"}</span>
-        </div>
+        </div> */}
         <div className="flex">
           <strong className="w-28">Selesai</strong> <span>: {formData.end || "-"}</span>
         </div>
@@ -397,6 +400,7 @@ const handleAttendanceChange = (nisn, status) => {
           <GenerateButton onSave={handleFormSave} />
         </div>
       </div>
+
       <table className="w-full border-t border-gray-300">
         <thead>
           <tr className="border-b border-gray-300">
@@ -408,50 +412,44 @@ const handleAttendanceChange = (nisn, status) => {
             <th className="py-2">Hari/Tanggal</th>
           </tr>
         </thead>
-<tbody>
-  {filteredStudents.map((student, index) => {
-    const uniqueId = student.nisn;
-    return (
-      <tr
-        key={`${student.id ?? index}-${index}`}
-        className="border-b border-gray-300 text-center"
-      >
-        <td className="py-2">{index + 1}.</td>
-
-
-        <td className="py-6 pl-3 text-left">{student.nama}</td>
-
-        {["Daftar", "Tidak Daftar"].map((status) => (
-          <td key={status} className="py-2 px-10">
-            <input
-              type="radio"
-              id={`attendance-${uniqueId}-${status}`}
-              name={`attendance-${uniqueId}`}
-              value={status}
-              checked={attendance[uniqueId]?.status === status}
-              onChange={() => handleAttendanceChange(uniqueId, status)}
-              disabled={!isEditing}
-              className="accent-blue-600"
-            />
-            <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
-              {status}
-            </label>
-          </td>
-        ))}
-
-        <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
-        <td className="py-2 px-2">
-  {attendance[uniqueId]?.tanggal_daftar || "-"}
-</td>
-
-      </tr>
-    );
-  })}
-</tbody>
-
+        <tbody>
+          {filteredStudents.map((student, index) => {
+            const uniqueId = student.nisn;
+            return (
+              <tr
+                key={`${student.id ?? index}-${index}`}
+                className="border-b border-gray-300 text-center"
+              >
+                <td className="py-2">{index + 1}.</td>
+                <td className="py-6 pl-3 text-left">{student.nama}</td>
+                {["Daftar", "Tidak Daftar"].map((status) => (
+                  <td key={status} className="py-2 px-10">
+                    <input
+                      type="radio"
+                      id={`attendance-${uniqueId}-${status}`}
+                      name={`attendance-${uniqueId}`}
+                      value={status}
+                      checked={attendance[uniqueId]?.status === status}
+                      onChange={() => handleAttendanceChange(uniqueId, status)}
+                      disabled={!isEditing}
+                      className="accent-blue-600"
+                    />
+                    <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
+                      {status}
+                    </label>
+                  </td>
+                ))}
+                <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
+                <td className="py-2 px-2">
+                  {attendance[uniqueId]?.tanggal_daftar || "-"}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
 
-          <div className="mt-4 flex space-x-2">
+      <div className="mt-4 flex space-x-2">
         {(isEditing || !hasAttendanceData) ? (
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-md"

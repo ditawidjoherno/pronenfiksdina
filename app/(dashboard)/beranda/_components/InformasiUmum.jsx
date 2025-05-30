@@ -168,7 +168,7 @@ console.log("📦 Data dikirim ke backend:", finalInfo); // Debug
                 )}
                 <button
                   onClick={handleDelete}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center"
+                  className="bg-yellow-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center"
                 >
                   <FaTrash className="mr-1" /> Hapus
                 </button>

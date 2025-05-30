@@ -3,7 +3,8 @@ import React from "react";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
 import { FaArrowLeft } from "react-icons/fa";
-import IkutSertaSiswa from "./_components/DetailSiswa";
+import ImageSlider from "./_components/ImageTour";
+import StudentParticipation from "./_components/DetailSiswa";
 import UploadGallery from "./_components/GaleriFoto";
 
 
@@ -26,7 +27,7 @@ export default function TourDetail() {
             <FaArrowLeft className="text-2xl " />
           </button>
         </div>
-        <IkutSertaSiswa/>
+        <StudentParticipation/>
         <div className="mt-5">
         <UploadGallery/>
         </div>

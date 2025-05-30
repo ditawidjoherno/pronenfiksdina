@@ -68,9 +68,10 @@ export default function listInform() {
   const handleAddInfo = async (newInfo) => {
     console.log("📦 session.user:", session?.user); // ✅ DEBUG
     const finalInfo = {
-      ...newInfo,
-      author: session?.user?.name?.trim() || 'Admin Sistem', // ✅ PERBAIKAN
-    };
+  ...newInfo,
+  author: session?.user?.name?.trim() || 'Admin Sistem',
+  photo: session?.user?.foto_profil || '/images/profil.jpg', // tambahkan baris ini
+};
 
     console.log("📦 finalInfo dikirim:", finalInfo); // ✅ DEBUG
 
@@ -126,9 +127,9 @@ export default function listInform() {
             <h3 className="text-gray-800 font-bold mt-2">{info?.title?.trim() || 'Tanpa Judul'}</h3>
             <p className="mt-2 text-gray-700 font-medium">{getShortText(info?.text?.trim() || '-')}</p>
             <div className="mt-2 text-gray-500 text-sm flex items-center">
-              <img src="/images/profil.jpg" alt="User" className="w-5 h-5 rounded-full mr-2" />
-              {info?.author?.trim() || 'Anonim'} / {info?.time?.trim() || '-'}
-            </div>
+  <img src={info?.photo || '/images/profil.jpg'} alt="User" className="w-5 h-5 rounded-full mr-2" />
+  {info?.author?.trim() || 'Anonim'} / {info?.time?.trim() || '-'}
+</div>
           </div>
         ))}
       </div>
@@ -155,9 +156,9 @@ export default function listInform() {
                 <p className="text-gray-700 mb-4">{selectedInfo?.text?.trim() || '-'}</p>
               )}
               <div className="text-sm text-gray-500 flex items-center">
-                <img src="/images/profil.jpg" alt="User" className="w-6 h-6 rounded-full mr-2" />
-                {selectedInfo?.author?.trim() || '-'} / {selectedInfo?.time?.trim() || '-'}
-              </div>
+  <img src={selectedInfo?.photo || '/images/profil.jpg'} alt="User" className="w-6 h-6 rounded-full mr-2" />
+  {selectedInfo?.author?.trim() || '-'} / {selectedInfo?.time?.trim() || '-'}
+</div>
               <div className="mt-4 flex justify-end space-x-2">
                 {isEditing ? (
                   <button
