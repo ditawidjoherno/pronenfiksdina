@@ -40,61 +40,58 @@ const RecentActivity = () => {
 
   return (
     <div className="p-5 rounded-xl shadow-md bg-white w-full max-w-6xl mx-auto mt-5">
-      <h2 className="text-xl font-semibold mb-3 flex items-center">
-        <FaClock className="mr-2 text-lg" /> Recent Activity
-      </h2>
+  <h2 className="text-xl font-semibold mb-3 flex items-center">
+    <FaClock className="mr-2 text-lg" /> Recent Activity
+  </h2>
 
-     <div className="overflow-x-auto">
-  {loading ? (
-    <div className="text-center py-6 text-gray-500">Loading...</div>
-  ) : (
-    <div
-      className={`${
-        activities.length >= 6 ? "max-h-96 overflow-y-auto" : ""
-      }`}
-    >
-      <table className="table-fixed w-full text-base">
-  <thead className="sticky top-0 bg-white z-10 shadow">
-  <tr className="border-b text-gray-600">
-    <th className="py-3 px-4 text-center w-[130px]">Date</th>
-    <th className="py-3 px-4 text-center w-[100px]">Time</th>
-    <th className="py-3 px-4 text-center w-[200px]">
-      <div className="flex items-center justify-center gap-2">Name</div>
-    </th>
-    <th className="py-3 px-4 text-center w-[130px]">Status</th>
-    <th className="py-3 px-4 text-center w-[100px]">Action</th>
-  </tr>
-</thead>
-  <tbody>
-    {activities.map((activity, index) => (
-      <tr key={index} className="border-b text-gray-700 text-center">
-        <td className="py-3 px-4 w-[130px] font-semibold">
-  {dayjs(activity.date).format("dddd, DD MMMM YYYY")}
-</td>
-
-        <td className="py-3 px-4 w-[100px]">{activity.time}</td>
-       <td className="py-3 px-2 w-[200px]">
-  <div className="flex items-center justify-center gap-2">
-    <img src={activity.avatar} alt={activity.name} className="w-10 h-10 rounded-full" />
-    {activity.name}
+  <div className="overflow-x-auto">
+    {loading ? (
+      <div className="text-center py-6 text-gray-500">Loading...</div>
+    ) : (
+      <div className={`${activities.length >= 6 ? "max-h-96 overflow-y-auto" : ""}`}>
+        <table className="min-w-[700px] w-full text-sm sm:text-base table-fixed">
+          <thead className="sticky top-0 bg-white z-10 shadow">
+            <tr className="border-b text-gray-600">
+              <th className="py-3 px-2 min-w-[130px] text-center">Tanggal</th>
+              <th className="py-3 px-2 min-w-[100px] text-center">Waktu</th>
+              <th className="py-3 px-2 min-w-[200px] text-center">Nama</th>
+              <th className="py-3 px-2 min-w-[130px] text-center">Status</th>
+              <th className="py-3 px-2 min-w-[100px] text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activities.map((activity, index) => (
+              <tr key={index} className="border-b text-gray-700 text-center">
+                <td className="py-3 px-2 font-semibold">
+                  {dayjs(activity.date).format("dddd, DD MMMM YYYY")}
+                </td>
+                <td className="py-3 px-2">{activity.time}</td>
+                <td className="py-3 px-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <img
+                      src={activity.avatar}
+                      alt={activity.name}
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                    />
+                    <span className="truncate max-w-[100px] sm:max-w-none">{activity.name}</span>
+                  </div>
+                </td>
+                <td className="py-3 px-2">
+                  <div className="flex justify-center">
+                    <span className={`text-white px-3 py-1 rounded-lg text-xs sm:text-sm ${activity.color}`}>
+                      <span className={activity.roleColor}>{activity.role}</span>
+                    </span>
+                  </div>
+                </td>
+                <td className="py-3 px-2">{activity.action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
   </div>
-</td>
-        <td className="py-3 px-4 w-[130px]">
-          <div className="flex justify-center">
-            <span className={`text-white px-4 py-1 rounded-lg text-sm ${activity.color}`}>
-              <span className={activity.roleColor}>{activity.role}</span>
-            </span>
-          </div>
-        </td>
-        <td className="py-3 px-4 w-[100px]">{activity.action}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-    </div>
-  )}
 </div>
-    </div>
   );
 };
 

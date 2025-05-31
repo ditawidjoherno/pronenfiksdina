@@ -128,46 +128,48 @@ const KehadiranChart = () => {
         </div>
 
         {/* Chart */}
-        <div ref={chartRef} style={{ flexGrow: 1, minHeight: 0 }}>
-          {chartData ? (
-            <Bar data={chartData} options={options} height={400} />
-          ) : (
-            <p className="text-center p-10">Memuat data...</p>
-          )}
-        </div>
+        <div
+  ref={chartRef}
+  style={{ flexGrow: 1, minHeight: 0 }}
+  className="max-sm:overflow-x-auto max-sm:-mx-4"
+>
+  <div className="max-sm:min-w-[600px]">
+    {chartData ? (
+      <Bar data={chartData} options={options} height={400} />
+    ) : (
+      <p className="text-center p-10">Memuat data...</p>
+    )}
+  </div>
+</div>
 
         {/* Legend manual + tombol download */}
-        {chartData && (
-          <div className="flex justify-between items-center mt-4 px-2">
-            <div className="flex gap-6 text-sm font-semibold text-gray-700">
-              {/* Legend item Jumlah Kehadiran */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-5 h-5 rounded-sm"
-                  style={{ backgroundColor: "#B2A5FF" }}
-                />
-                Jumlah Kehadiran
-              </div>
+       {/* Legend manual + tombol download */}
+{chartData && (
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-4 px-2 gap-2 sm:gap-0">
+    {/* Legend */}
+    <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm font-semibold text-gray-700 text-center sm:text-left">
+      <div className="flex items-center gap-2 justify-center">
+        <div className="w-5 h-5 rounded-sm" style={{ backgroundColor: "#B2A5FF" }} />
+        Jumlah Kehadiran
+      </div>
+      <div className="flex items-center gap-2 justify-center">
+        <div className="w-5 h-5 rounded-sm" style={{ backgroundColor: "#493D9E" }} />
+        Jumlah Keseluruhan Siswa
+      </div>
+    </div>
 
-              {/* Legend item Jumlah Keseluruhan Siswa */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-5 h-5 rounded-sm"
-                  style={{ backgroundColor: "#493D9E" }}
-                />
-                Jumlah Keseluruhan Siswa
-              </div>
-            </div>
-
-            <button
-              onClick={handleDownloadPDF}
-              className="p-2 text-blue-600 hover:text-blue-800 transition"
-              title="Download Chart sebagai PDF"
-              aria-label="Download PDF"
-            >
-              <FiDownload size={24} />
-            </button>
-          </div>
+    {/* Tombol Download */}
+    <div className="flex justify-center sm:justify-end">
+      <button
+        onClick={handleDownloadPDF}
+        className="p-2 text-blue-600 hover:text-blue-800 transition"
+        title="Download Chart sebagai PDF"
+        aria-label="Download PDF"
+      >
+        <FiDownload size={24} />
+      </button>
+    </div>
+  </div>
         )}
       </div>
     </div>

@@ -1,23 +1,16 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import useUser from "@/hooks/use-user";
 
 const Header = () => {
   const router = useRouter();
-  const { loading, error, data, getUserData } = useUser();
+  const { data, loading, error, getUserData } = useUser();
 
   useEffect(() => {
     getUserData();
   }, []);
-
-  useEffect(() => {
-  getUserData().then(() => {
-    console.log("📦 Data dari useUser:", data);
-  });
-}, []);
-
 
   const handleLogout = () => {
     router.push("/");
@@ -29,26 +22,30 @@ const Header = () => {
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
             <img
- src={
-  data?.foto_profil
-    ? `http://localhost:8000/storage/${data.foto_profil}?t=${Date.now()}`
-    : "/images/profil.png"
-}
-  alt="Profile"
-  className="w-8 h-8 rounded-full object-cover"
-/>
+              src={
+                data?.foto_profil
+                  ? `http://localhost:8000/storage/${data.foto_profil}?t=${Date.now()}`
+                  : "/images/profil.png"
+              }
+              alt="Profile"
+              className="w-8 h-8 rounded-full object-cover"
+            />
           </div>
 
-          {data ? (
-            <div className="text-left leading-tight">
-              <p className="text-black text-sm font-medium">{data.nama}</p>
-              <p className="text-black text-xs capitalize">{data.role}</p>
-            </div>
-          ) : (
-            <div>
+          <div className="text-left leading-tight">
+            {loading ? (
               <p className="text-black text-sm font-medium">Memuat...</p>
-            </div>
-          )}
+            ) : error ? (
+              <p className="text-red-600 text-sm font-medium">Gagal memuat data</p>
+            ) : data ? (
+              <>
+                <p className="text-black text-sm font-medium">{data.nama}</p>
+                <p className="text-black text-xs capitalize">{data.role}</p>
+              </>
+            ) : (
+              <p className="text-black text-sm font-medium">Tidak ada data</p>
+            )}
+          </div>
         </div>
 
         <button

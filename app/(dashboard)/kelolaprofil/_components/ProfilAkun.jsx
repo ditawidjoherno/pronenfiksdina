@@ -33,9 +33,9 @@ export default function ProfileCard() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-7xl mx-auto h-[485px] flex flex-col mt-10 px-10">
-      <div className="flex items-center gap-8">
-        <div className="pl-10 -mt-8">
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-7xl mx-auto sm:h-[485px] h-auto flex flex-col mt-10 px-10">
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
+        <div className="sm:pl-10 scroll-pl-5 sm:mt-10 mt-2 ">
 <img
   key={lastUpdate}
   src={
@@ -44,35 +44,33 @@ export default function ProfileCard() {
       : "/images/profil.png"
   }
   alt="Profile"
-  width={220}
-  height={220}
-  className="rounded-xl object-cover"
+  className="rounded-xl object-cover sm:w-[220px] w-[120px] sm:h-[200px] h-[120px] "
 />
 
         </div>
 
-        <div className="grid grid-cols-2 gap-x-10 gap-y-6 w-full pl-14 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-x-10 gap-x-2 gap-y-6 w-full sm:mt-10 mt-2 sm:pl-14">
           <div>
-            <p className="font-bold text-lg">Nama</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.nama}</p>
+            <p className="font-bold sm:text-lg text-base">Nama</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.nama}</p>
           </div>
           <div>
-            <p className="font-bold text-lg">Jabatan</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.role}</p>
+            <p className="font-bold sm:text-lg text-base">Jabatan</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.role}</p>
           </div>
           <div>
-            <p className="font-bold text-lg">{profile?.role === "guru" ? "NIP" : "NISN"}</p>
-            <p className="text-gray-700 font-medium text-lg">
+            <p className="font-bold sm:text-lg text-base">{profile?.role === "guru" ? "NIP" : "NISN"}</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">
               {profile?.role === "guru" ? profile?.nip : profile?.nisn}
             </p>
           </div>
           <div>
-            <p className="font-bold text-lg">Status</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.kelas ?? "Non-Kelas"}</p>
+            <p className="font-bold sm:text-lg text-base">Status</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.kelas ?? "Non-Kelas"}</p>
           </div>
           <div>
-            <p className="font-semibold text-lg">Jenis Kelamin</p>
-            <p className="text-gray-700 font-medium text-lg">
+            <p className="font-semibold sm:text-lg text-base">Jenis Kelamin</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">
               {profile?.jenis_kelamin === "L"
                 ? "Laki-laki"
                 : profile?.jenis_kelamin === "P"
@@ -81,21 +79,21 @@ export default function ProfileCard() {
             </p>
           </div>
           <div>
-            <p className="font-semibold text-lg">Agama</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.agama}</p>
+            <p className="font-semibold sm:text-lg text-base">Agama</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.agama}</p>
           </div>
           <div>
-            <p className="font-semibold text-lg">No HP</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.nomor_hp || "-"}</p>
+            <p className="font-semibold sm:text-lg text-base">No HP</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.nomor_hp || "-"}</p>
           </div>
           <div>
-            <p className="font-semibold text-lg">Email</p>
-            <p className="text-gray-700 font-medium text-lg">{profile?.email}</p>
+            <p className="font-semibold sm:text-lg text-base">Email</p>
+            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.email}</p>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end gap-4 mt-auto pr-2 -pb-2">
+      <div className="flex flex-col sm:flex-row justify-end sm:gap-4 gap-1 sm:mt-auto mt-4 pr-2 pb-2">
         <button
           onClick={() => setIsEditPopupOpen(true)}
           className="flex items-center gap-2 bg-[#144A8F] hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition"

@@ -13,14 +13,15 @@ const LoginPage = () => {
 
             {/* Background Gambar */}
             <div 
-    className="absolute top-0 h-full w-full bg-cover bg-center mt-16"
-    style={{ 
-        backgroundImage: "url('/images/siswa.png')",
-        backgroundSize: "25% auto",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center top", // Menggeser gambar ke bagian atas
-    }}
+  className="absolute top-0 h-full w-full 
+             bg-no-repeat bg-top 
+             bg-[length:270px_auto] sm:bg-[length:25%_auto] sm:mt-16 mt-20"
+  style={{ 
+    backgroundImage: "url('/images/siswa.png')",
+    backgroundPosition: "center top",
+  }}
 ></div>
+
 
 
             {/* Form Login */}

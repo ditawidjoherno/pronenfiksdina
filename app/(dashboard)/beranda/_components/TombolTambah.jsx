@@ -20,9 +20,9 @@ const GreenButton = ({ onAddInfo }) => {
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40">
-          <div className="bg-white p-2 rounded-lg relative z-50 mt-8">
+          <div className="p-2 rounded-lg relative z-50 mt-8">
             <button
-              className="absolute top-2 right-2 text-red-500 hover:text-red-600"
+              className="absolute top-2 right-2 mr-7 mt-1 text-red-500 hover:text-red-600"
               onClick={() => setIsOpen(false)}
             >
               <IoMdCloseCircle size={30} />

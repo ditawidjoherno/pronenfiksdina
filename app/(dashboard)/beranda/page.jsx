@@ -14,6 +14,7 @@ import EventCalendarGuru from "./_components/Kalender";
 import EventCalendarSiswa from "./_components/KalenderSiswa";
 import dynamic from "next/dynamic";
 
+
 // Load grafik kehadiran hanya di client
 const KehadiranChartGuru = dynamic(() => import("./_components/KehadiranChart"), {
   ssr: false,
@@ -49,10 +50,10 @@ export default function Beranda() {
             <div className="w-full max-w-6xl mx-auto">
               <RecentActivity />
             </div>
-            <div className="flex max-w-6xl mx-auto gap-4 mt-4">
-              <div className="w-1/2"><InformasiListGuru /></div>
-              <div className="w-1/2"><EventCalendarGuru /></div>
-            </div>
+            <div className="flex flex-col md:flex-row max-w-6xl mx-auto gap-4 mt-4">
+  <div className="w-full md:w-1/2"><InformasiListGuru /></div>
+  <div className="w-full md:w-1/2"><EventCalendarGuru /></div>
+</div>
             <KehadiranChartGuru />
           </>
         ) : role === "siswa" ? (

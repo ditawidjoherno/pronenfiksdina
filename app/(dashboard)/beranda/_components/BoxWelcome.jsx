@@ -14,12 +14,12 @@ const BoxWelcome = () => {
           <img
             src="/images/siswabox.png" // Ganti dengan path gambar yang sesuai
             alt="guru"
-            className="w-[200px] h-[200px] object-contain ml-8" // Ukuran diperbesar
+            className="w-[200px] h-[200px]  object-contain ml-8" // Ukuran diperbesar
           />
 
           {/* Right Content (Text) */}
           <div>
-            <h2 className="text-2xl font-semibold text-[#070841]">Hai, Studies!</h2>
+            <h2 className=" text-2xl font-semibold text-[#070841]">Hai, Studies!</h2>
             <h1 className="text-xl font-poppins">
             Selamat datang di SEVH!  
             </h1>
