@@ -2,7 +2,7 @@
 import React from "react";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
-import TourCard from "./_components/TourCard";
+import TourCard from "./_components/PameranCard";
 import ClassGrid from "./_components/Kelas";
 
 export default function studytour() {
@@ -17,7 +17,7 @@ export default function studytour() {
       {/* Konten Utama */}
       <main className="flex-1 p-4 bg-gray-200 overflow-y-auto">
         <h1 className="text-3xl text-black font-bold w-full max-w-6xl mt-14 -mb-4">
-          Study Tour 
+          Pameran
         </h1>
 
         <div className="flex justify-center mt-5">

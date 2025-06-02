@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FiUploadCloud, FiTrash2 } from 'react-icons/fi';
 import Image from 'next/image';
 
-export default function UploadGalleryTour() {
+export default function UploadGallery() {
   const [images, setImages] = useState([]);
 
   const handleImageUpload = (event) => {
@@ -14,15 +14,12 @@ export default function UploadGalleryTour() {
   };
 
   const removeImage = (index) => {
-    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus gambar ini?");
-    if (confirmDelete) {
-      setImages(images.filter((_, i) => i !== index));
-    }
+    setImages(images.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="p-4 bg-gray-100 rounded-xl shadow-md w-full mx-auto">
-      <label className="cursor-pointer flex items-center justify-center p-3 bg-gray-200 rounded-md hover:bg-gray-300 transition mb-4">
+    <div className="p-4 bg-white rounded-2xl shadow-md w-full mx-auto">
+      <label className="cursor-pointer flex items-center justify-center p-3 bg-blue-200 rounded-md hover:bg-blue-300 transition mb-4">
         <FiUploadCloud className="mr-2" />
         <span className="font-medium text-gray-700">Upload Gambar</span>
         <input type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" />

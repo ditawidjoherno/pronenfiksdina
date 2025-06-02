@@ -15,7 +15,7 @@ const GenerateForm = ({ isOpen, onClose, onSave }) => {
     onSave({
       date,
       cost,
-      endDate,
+      end: dayName, // hanya kirim nama hari
     });
 
     onClose();

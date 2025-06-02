@@ -1,17 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function StudyTourCards() {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:8000/api/perjalanan-sebelumnya')
-      .then((res) => res.json())
-      .then((data) => setEvents(data))
-      .catch((error) => console.error('Error fetching events:', error));
-  }, []);
+  const events = [
+    { title: 'Study Tour', date: '01, Mar, 2025', location: 'Benteng Moraya Tondano' },
+    { title: 'Pameran', date: '01, Mar, 2025', location: 'HUT Minahasa ke 578' },
+    { title: 'Study Tour', date: '01, Mar, 2025', location: 'Taman Budaya' },
+  ];
 
   const formatTitleForURL = (title) => {
     return title
@@ -29,7 +25,7 @@ export default function StudyTourCards() {
           >
             <div>
               <h2 className="font-bold text-xl">{event.title}</h2>
-              <p className="text-sm font-medium opacity-80">{event.tanggal}</p>
+              <p className="text-sm font-medium opacity-80">{event.date}</p>
             </div>
             <div className="flex-1 flex justify-center">
               <p className="text-[#0f285a] font-bold text-2xl text-center">{event.location}</p>

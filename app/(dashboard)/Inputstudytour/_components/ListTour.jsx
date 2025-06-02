@@ -12,54 +12,52 @@ const students = [
   { id: 5, name: 'Akio Anak Baik Sekali' },
 ];
 
-export default function ListForm( ) {
+export default function ListForm() {
   const [list, setList] = useState({});
   const [startDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate] = useState(new Date().toISOString().split('T')[0]);
-  const [destination] = useState("Museum Sejarah");
   const [cost] = useState("Rp 50.000");
-    const [attendance, setAttendance] = useState({});
-    const [lastEdit, setLastEdit] = useState(null);
-    const [isEditing, setIsEditing] = useState(true);
-    const [students, setStudents] = useState([]);
-    const [day, setDay] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [isEditable, setIsEditable] = useState(false);
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [tourFetched, setTourFetched] = useState(false);
-    const searchParams = useSearchParams();
-    const kelas = searchParams.get("kelas") || "";
-    const [hasAttendanceData, setHasAttendanceData] = useState(false);
-    const [lastDate, setLastDate] = useState(new Date().toISOString().slice(0, 10));
+  const [attendance, setAttendance] = useState({});
+  const [lastEdit, setLastEdit] = useState(null);
+  const [isEditing, setIsEditing] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [day, setDay] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [isEditable, setIsEditable] = useState(false);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [tourFetched, setTourFetched] = useState(false);
+  const searchParams = useSearchParams();
+  const kelas = searchParams.get("kelas") || "";
+  const [hasAttendanceData, setHasAttendanceData] = useState(false);
+  const [lastDate, setLastDate] = useState(new Date().toISOString().slice(0, 10));
 
-    useEffect(() => {
-      if (!kelas) return;
-  
-      const fetchStudents = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await fetch(
-            `http://localhost:8000/api/siswa-kelas?kelas=${encodeURIComponent(kelas)}`
-          );
-          if (!response.ok) throw new Error("Gagal mengambil data siswa");
-  
-          const data = await response.json();
-          setStudents(data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchStudents();
-    }, [kelas]);
+  useEffect(() => {
+    if (!kelas) return;
 
-          const filteredStudents = students
+    const fetchStudents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/siswa-kelas?kelas=${encodeURIComponent(kelas)}`
+        );
+        if (!response.ok) throw new Error("Gagal mengambil data siswa");
+
+        const data = await response.json();
+        setStudents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [kelas]);
+
+  const filteredStudents = students
     .filter((student) => student.nisn)
     .filter((student) =>
       student.nama.toLowerCase().includes(search.toLowerCase())
@@ -67,111 +65,98 @@ export default function ListForm( ) {
 
   const [formData, setFormData] = useState({
     date: "",
-    destination: "",
     cost: "",
-    start: "",
-    end: "",
+    endDate: "",
   });
 
-const handleFormSave = (data) => {
-  setFormData(data);
-  setDay(data.date); // ambil hari dari form
-  setStartTime(data.start);
-  setEndTime(data.end);
-};
-
-
-useEffect(() => {
-  const today = new Date().toISOString().slice(0, 10);
-
-  const fetchTour = async () => {
-    try {
-      const res = await fetch(`http://localhost:8000/api/absensi-tour?kelas=${kelas}&tanggal=${today}`);
-      if (!res.ok) throw new Error("Gagal mengambil data study tour");
-
-      const data = await res.json();
-
-      if (!data.data || data.data.length === 0) {
-        // Data kosong, reset form dan absensi
-        setHasAttendanceData(false);
-        setAttendance({});
-        setFormData({
-          date: "",
-          destination: "",
-          cost: "",
-          start: "",
-          end: "",
-        });
-        setDay("");
-        setStartTime("");
-        setEndTime("");
-        setIsEditing(true);
-        setIsEditable(true);
-      } else {
-        // Ada data, isi formData sekaligus attendance
-        setHasAttendanceData(true);
-
-        setFormData({
-          date: data.hari || "",
-          destination: data.tujuan || "",
-          cost: data.biaya ? `Rp ${data.biaya.toLocaleString('id-ID')}` : "",
-          start: data.mulai || "",
-          end: data.selesai || "",
-        });
-
-        setDay(data.hari || "");
-        setStartTime(data.mulai || "");
-        setEndTime(data.selesai || "");
-
-        const formatDateWithDay = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-        const tourMap = {};
-        data.data.forEach(item => {
-          if (item.nisn) {
-            tourMap[item.nisn] = {
-  status: item.status,
-  time: item.waktu_daftar || item.waktu_absen || "",
-  tanggal_daftar: formatDateWithDay(item.tanggal_daftar) || "",
-};
-          }
-        });
-        setAttendance(tourMap);
-
-        setIsEditing(false);
-        setIsEditable(false);
-      }
-
-      setTourFetched(true);
-    } catch (error) {
-      console.error("Error fetching study tour:", error.message);
-      setHasAttendanceData(false);
-      setIsEditing(true);
-      setIsEditable(true);
-      setFormData({
-        date: "",
-        destination: "",
-        cost: "",
-        start: "",
-        end: "",
-      });
-    }
+  const handleFormSave = (data) => {
+    setFormData(data);
+    setDay(data.date);
+    setEndTime(data.endDate);
   };
 
-  if (kelas) fetchTour();
-}, [kelas]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const fetchTour = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/absensi-tour?kelas=${kelas}&tanggal=${today}`);
+        if (!res.ok) throw new Error("Gagal mengambil data study tour");
+
+        const data = await res.json();
+
+        if (!data.data || data.data.length === 0) {
+          setHasAttendanceData(false);
+          setAttendance({});
+          setFormData({
+            date: "",
+            cost: "",
+            end: "",
+          });
+          setDay("");
+          setEndTime("");
+          setIsEditing(true);
+          setIsEditable(true);
+        } else {
+          setHasAttendanceData(true);
+
+          setFormData({
+            date: data.tanggal_kegiatan || "",
+            cost: data.biaya ? `Rp ${data.biaya.toLocaleString('id-ID')}` : "",
+            endDate: data.batas_pendaftaran || "",
+          });
+
+          setDay(data.tanggal_kegiatan || "");
+          setEndTime(data.batas_pendaftaran || "");
+
+          const formatDateWithDay = (dateString) => {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+          };
+          const tourMap = {};
+          data.data.forEach(item => {
+            if (item.nisn) {
+              tourMap[item.nisn] = {
+                status: item.status,
+                time: item.waktu_daftar || item.waktu_absen || "",
+                tanggal_daftar: formatDateWithDay(item.tanggal_daftar) || "",
+              };
+            }
+          });
+          setAttendance(tourMap);
+
+          setIsEditing(false);
+          setIsEditable(false);
+        }
+
+        setTourFetched(true);
+      } catch (error) {
+        console.error("Error fetching study tour:", error.message);
+        setHasAttendanceData(false);
+        setIsEditing(true);
+        setIsEditable(true);
+        setFormData({
+          date: "",
+          cost: "",
+          end: "",
+        });
+      }
+    };
+
+    if (kelas) fetchTour();
+  }, [kelas]);
 
   useEffect(() => {
     const now = new Date();
     const deadline = new Date(endDate);
-    
+
     if (now > deadline) {
       setList((prevList) => {
         const updatedList = { ...prevList };
@@ -186,15 +171,15 @@ useEffect(() => {
   }, [endDate]);
 
   function formatDateWithDay(dateString) {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', {
-    weekday: 'long', // nama hari
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
 
   const handleListChange = (id, status) => {
     if (!isEditing) return;
@@ -203,7 +188,7 @@ useEffect(() => {
     const formattedDate = currentDateTime.toLocaleDateString('id-ID');
     const formattedTime = currentDateTime.toLocaleTimeString('id-ID');
     const dayName = currentDateTime.toLocaleDateString('id-ID', { weekday: 'long' });
-    
+
     setList((prev) => ({
       ...prev,
       [id]: { status, time: formattedTime, date: `${dayName}, ${formattedDate}` },
@@ -211,84 +196,78 @@ useEffect(() => {
     setLastEdit(`${dayName}, ${formattedDate} ${formattedTime}`);
   };
 
-const handleSave = async () => {
-  if (!day || !startTime || !endTime) {
-    alert("Klik Generate dulu sebelum Save");
-    return;
-  }
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  const studyTourArray = Object.entries(attendance).map(([nisn, value]) => ({
-    nisn,
-    status: value.status,
-    waktu_daftar: value.time,
-    tanggal_daftar: today,
-  }));
-
-const payload = {
-  kelas,
-  tanggal: new Date().toISOString().slice(0, 10),
-  hari: formData.date,
-  mulai: formData.start,
-  selesai: formData.end,
-  tujuan: formData.destination,
-  biaya: parseInt(formData.cost.replace(/[^\d]/g, '')),
-  studyTour: studyTourArray,
-};
-
-
-try {
-    const response = await fetch("http://localhost:8000/api/input-tour", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers.get('content-type'));
-
-    const text = await response.text();
-    console.log('Response text:', text);
-
-    if (!response.ok) {
-      alert("Gagal menyimpan: " + text);
+  const handleSave = async () => {
+    if (!day || !endTime) {
+      alert("Klik Generate dulu sebelum Save");
       return;
     }
 
-    // parsing json setelah cek ok
-    const data = JSON.parse(text);
+    const today = new Date().toISOString().slice(0, 10);
 
-    alert("Data study tour berhasil disimpan!");
-    setIsEditing(false);
-    setIsEditable(false);
-  } catch (err) {
-    alert("Gagal: " + err.message);
-  }
-};
+    const studyTourArray = Object.entries(attendance).map(([nisn, value]) => ({
+      nisn,
+      status: value.status,
+      waktu_daftar: value.time,
+      tanggal_daftar: today,
+    }));
+
+    const payload = {
+      kelas,
+      tanggal_kegiatan: today,
+      hari_kegiatan: day,
+      batas_pendaftaran: endTime,
+      biaya: parseInt(formData.cost.replace(/[^\d]/g, '')) || 0,
+      studyTour: studyTourArray,
+    };
+
+    console.log("Payload yang dikirim:", payload);
+
+    try {
+      const response = await fetch('http://localhost:8000/api/input-tour', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Gagal menyimpan: " + errorText);
+        return;
+      }
+
+      alert("Data study tour berhasil disimpan!");
+      setIsEditing(false);
+      setIsEditable(false);
+    } catch (err) {
+      alert("Gagal: " + err.message);
+    }
+  };
 
 
-const handleAttendanceChange = (nisn, status) => {
-  if (!isEditing) return;
 
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, "0");
-  const minutes = now.getMinutes().toString().padStart(2, "0");
-  const formattedTime = `${hours}:${minutes}`;
-  const formattedDate = now.toLocaleDateString('id-ID');
-  const dayName = now.toLocaleDateString('id-ID', { weekday: 'long' });
+  const handleAttendanceChange = (nisn, status) => {
+    if (!isEditing) return;
 
-  setAttendance((prev) => ({
-    ...prev,
-    [nisn]: {
-      status,
-      time: formattedTime,
-      tanggal_daftar: `${dayName}, ${formattedDate}`, // simpan hari & tanggal
-    },
-  }));
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}`;
+    const formattedDate = now.toLocaleDateString('id-ID');
+    const dayName = now.toLocaleDateString('id-ID', { weekday: 'long' });
 
-  setLastEdit(now.toLocaleString());
-};
+    setAttendance((prev) => ({
+      ...prev,
+      [nisn]: {
+        status,
+        time: formattedTime,
+        tanggal_daftar: `${dayName}, ${formattedDate}`,
+      },
+    }));
+
+    setLastEdit(now.toLocaleString());
+  };
 
 
 
@@ -296,72 +275,71 @@ const handleAttendanceChange = (nisn, status) => {
     setIsEditing(true);
   };
 
-   const resetForm = () => {
-      setAttendance({});
-      setDay("");
-      setStartTime("");
-      setEndTime("");
-      setIsEditing(true);
-      setIsEditable(false);
-      setLastEdit(null);
-      setHasAttendanceData(false);
-    };
-  
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-        const today = new Date().toISOString().slice(0, 10);
-        if (today !== lastDate) {
-          resetForm();
-          setLastDate(today);
-        }
-      }, 60000);
-  
+  const resetForm = () => {
+    setAttendance({});
+    setDay("");
+    setEndTime("");
+    setIsEditing(true);
+    setIsEditable(false);
+    setLastEdit(null);
+    setHasAttendanceData(false);
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
       const today = new Date().toISOString().slice(0, 10);
       if (today !== lastDate) {
         resetForm();
         setLastDate(today);
       }
-  
-      return () => clearInterval(intervalId);
-    }, [lastDate]);
-  
-  
-    useEffect(() => {
-      if (!endTime) return;
-  
-      const checkEndTime = () => {
-        const now = new Date();
-        const [endHour, endMinute] = endTime.split(":").map(Number);
-        const endDateTime = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          endHour,
-          endMinute,
-          0
-        );
-  
-        if (now >= endDateTime) {
-          setAttendance((prev) => {
-            const updated = {};
-            Object.keys(prev).forEach((nisn) => {
-              updated[nisn] = {
-                status: "Tidak Daftar",
-                time: prev[nisn]?.time || "",
-              };
-            });
-            return updated;
+    }, 60000);
+
+    const today = new Date().toISOString().slice(0, 10);
+    if (today !== lastDate) {
+      resetForm();
+      setLastDate(today);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [lastDate]);
+
+
+  useEffect(() => {
+    if (!endTime) return;
+
+    const checkEndTime = () => {
+      const now = new Date();
+      const [endHour, endMinute] = endTime.split(":").map(Number);
+      const endDateTime = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        endHour,
+        endMinute,
+        0
+      );
+
+      if (now >= endDateTime) {
+        setAttendance((prev) => {
+          const updated = {};
+          Object.keys(prev).forEach((nisn) => {
+            updated[nisn] = {
+              status: "Tidak Daftar",
+              time: prev[nisn]?.time || "",
+            };
           });
-          setIsEditing(false);
-          setIsEditable(false);
-        }
-      };
-      checkEndTime();
-  
-      const intervalId = setInterval(checkEndTime, 60000);
-  
-      return () => clearInterval(intervalId);
-    }, [endTime]);
+          return updated;
+        });
+        setIsEditing(false);
+        setIsEditable(false);
+      }
+    };
+    checkEndTime();
+
+    const intervalId = setInterval(checkEndTime, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [endTime]);
 
   return (
     <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white">
@@ -375,83 +353,84 @@ const handleAttendanceChange = (nisn, status) => {
       </style>
 
       <div className="mb-4 space-y-2 text-md">
-        <div className="flex"><strong className="w-28">Kelas</strong> <span>: {kelas}</span>
-</div>
         <div className="flex">
-          <strong className="w-28">Hari</strong> <span>: {formatDateWithDay(formData.date) || "-"}</span>
+          <strong className="w-28">Kelas</strong> <span>: {kelas}</span>
         </div>
         <div className="flex">
-          <strong className="w-28">Tujuan</strong> <span>: {formData.destination || "-"}</span>
+          <strong className="w-28">Hari</strong> <span>: {formatDateWithDay(formData.date) || "-"}</span>
         </div>
         <div className="flex">
           <strong className="w-28">Biaya</strong> <span>: {formData.cost || "-"}</span>
         </div>
         <div className="flex">
-          <strong className="w-28">Mulai</strong> <span>: {formData.start || "-"}</span>
-        </div>
-        <div className="flex">
-          <strong className="w-28">Selesai</strong> <span>: {formData.end || "-"}</span>
+          <strong className="w-28">Batas </strong> <span>: {formatDateWithDay(formData.endDate) || "-"}</span>
         </div>
 
         <div className="mb-2 flex justify-start">
           <GenerateButton onSave={handleFormSave} />
         </div>
       </div>
-      <table className="w-full border-t border-gray-300">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2">No</th>
-            <th className="py-2">Nama</th>
-            <th className="py-2">Daftar</th>
-            <th className="py-2">Tidak Daftar</th>
-            <th className="py-2">Waktu</th>
-            <th className="py-2">Hari/Tanggal</th>
-          </tr>
-        </thead>
-<tbody>
-  {filteredStudents.map((student, index) => {
-    const uniqueId = student.nisn;
-    return (
-      <tr
-        key={`${student.id ?? index}-${index}`}
-        className="border-b border-gray-300 text-center"
-      >
-        <td className="py-2">{index + 1}.</td>
+      <div className='overflow-x-auto'>
 
+        <table className="w-full border-t border-gray-300 overflow-hidden">
+          <thead>
+            <tr className="border-b border-gray-300">
+              <th className="py-2">No</th>
+              <th className="py-2">Nama</th>
+              <th className="py-2">Daftar</th>
+              <th className="py-2">Tidak Daftar</th>
+              <th className="py-2">Waktu</th>
+              <th className="py-2">Hari/Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStudents.map((student, index) => {
+              const uniqueId = student.nisn;
+              return (
+                <tr
+                  key={`${student.id ?? index}-${index}`}
+                  className="border-b border-gray-300 text-center"
+                >
+                  <td className="py-2">{index + 1}.</td>
+                  <td className="py-6 px-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={student.foto || '/images/default-profile.png'}
+                        alt={student.nama}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span>{student.nama}</span>
+                    </div>
+                  </td>
+                  {["Daftar", "Tidak Daftar"].map((status) => (
+                    <td key={status} className="py-2 px-10">
+                      <input
+                        type="radio"
+                        id={`attendance-${uniqueId}-${status}`}
+                        name={`attendance-${uniqueId}`}
+                        value={status}
+                        checked={attendance[uniqueId]?.status === status}
+                        onChange={() => handleAttendanceChange(uniqueId, status)}
+                        disabled={!isEditing}
+                        className="accent-blue-600"
+                      />
+                      <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
+                        {status}
+                      </label>
+                    </td>
+                  ))}
+                  <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
+                  <td className="py-2 px-2">
+                    {attendance[uniqueId]?.tanggal_daftar || "-"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
-        <td className="py-6 pl-3 text-left">{student.nama}</td>
-
-        {["Daftar", "Tidak Daftar"].map((status) => (
-          <td key={status} className="py-2 px-10">
-            <input
-              type="radio"
-              id={`attendance-${uniqueId}-${status}`}
-              name={`attendance-${uniqueId}`}
-              value={status}
-              checked={attendance[uniqueId]?.status === status}
-              onChange={() => handleAttendanceChange(uniqueId, status)}
-              disabled={!isEditing}
-              className="accent-blue-600"
-            />
-            <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
-              {status}
-            </label>
-          </td>
-        ))}
-
-        <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
-        <td className="py-2 px-2">
-  {attendance[uniqueId]?.tanggal_daftar || "-"}
-</td>
-
-      </tr>
-    );
-  })}
-</tbody>
-
-      </table>
-
-          <div className="mt-4 flex space-x-2">
+      </div>
+      <div className="mt-4 flex space-x-2">
         {(isEditing || !hasAttendanceData) ? (
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-md"

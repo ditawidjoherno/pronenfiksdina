@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FiUploadCloud, FiTrash2 } from 'react-icons/fi';
 import Image from 'next/image';
 
-export default function UploadGalleryTour() {
+export default function UploadGallery() {
   const [images, setImages] = useState([]);
 
   const handleImageUpload = (event) => {

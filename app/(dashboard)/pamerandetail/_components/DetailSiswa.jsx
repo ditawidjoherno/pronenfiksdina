@@ -6,9 +6,9 @@ const IkutSertaSiswa = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/peserta-studytour")
+    axios.get("http://localhost:8000/api/peserta-pameran")
       .then(response => {
-        setStudents(response.data.data);
+        setStudents(response.data.data); // Pastikan struktur JSON kamu pakai `data`
         setLoading(false);
       })
       .catch(error => {
@@ -57,8 +57,8 @@ const IkutSertaSiswa = () => {
                       <span className="whitespace-nowrap flex-1 text-left">{student.name}</span>
                     </div>
                   </td>
-                  <td className="p-1 text-left sm:pr-16 pr-0">
-                    <span className="bg-white text-blue-500 px-4 py-1.5 rounded-full sm:text-xs text-[10px] font-semibold border border-blue-600 shadow-md">
+                  <td className="p-1 text-left pr-16">
+                    <span className="bg-white text-blue-500 px-4 py-1.5 rounded-full text-xs font-semibold border border-blue-600 shadow-md">
                       {student.class}
                     </span>
                   </td>
@@ -67,7 +67,7 @@ const IkutSertaSiswa = () => {
                       Daftar
                     </span>
                   </td>
-                  <td className="p-3 text-gray-700 sm:text-sm text-xs text-center">{student.time}</td>
+                  <td className="p-3 text-gray-700 text-sm text-center">{student.time}</td>
                   <td className="p-3 text-gray-600 text-sm text-center">{student.date}</td>
                 </tr>
               ))}
