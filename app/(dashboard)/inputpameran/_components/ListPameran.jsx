@@ -342,7 +342,7 @@ const handleAttendanceChange = (nisn, status) => {
       return () => clearInterval(intervalId);
     }, [endTime]);
 
-   return (
+  return (
     <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white">
       <style>
         {`
@@ -371,64 +371,66 @@ const handleAttendanceChange = (nisn, status) => {
           <GenerateButton onSave={handleFormSave} />
         </div>
       </div>
+      <div className='overflow-x-auto'>
 
-      <table className="w-full border-t border-gray-300">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2">No</th>
-            <th className="py-2">Nama</th>
-            <th className="py-2">Daftar</th>
-            <th className="py-2">Tidak Daftar</th>
-            <th className="py-2">Waktu</th>
-            <th className="py-2">Hari/Tanggal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredStudents.map((student, index) => {
-            const uniqueId = student.nisn;
-            return (
-              <tr
-                key={`${student.id ?? index}-${index}`}
-                className="border-b border-gray-300 text-center"
-              >
-                <td className="py-2">{index + 1}.</td>
-                <td className="py-6 px-4 text-left">
-  <div className="flex items-center gap-2">
-    <img
-      src={student.foto || '/images/default-profile.png'}
-      alt={student.nama}
-      className="w-8 h-8 rounded-full object-cover"
-    />
-    <span>{student.nama}</span>
-  </div>
-</td>
-                {["Daftar", "Tidak Daftar"].map((status) => (
-                  <td key={status} className="py-2 px-10">
-                    <input
-                      type="radio"
-                      id={`attendance-${uniqueId}-${status}`}
-                      name={`attendance-${uniqueId}`}
-                      value={status}
-                      checked={attendance[uniqueId]?.status === status}
-                      onChange={() => handleAttendanceChange(uniqueId, status)}
-                      disabled={!isEditing}
-                      className="accent-blue-600"
-                    />
-                    <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
-                      {status}
-                    </label>
+        <table className="w-full border-t border-gray-300 overflow-hidden">
+          <thead>
+            <tr className="border-b border-gray-300">
+              <th className="py-2">No</th>
+              <th className="py-2">Nama</th>
+              <th className="py-2">Daftar</th>
+              <th className="py-2">Tidak Daftar</th>
+              <th className="py-2">Waktu</th>
+              <th className="py-2">Hari/Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStudents.map((student, index) => {
+              const uniqueId = student.nisn;
+              return (
+                <tr
+                  key={`${student.id ?? index}-${index}`}
+                  className="border-b border-gray-300 text-center"
+                >
+                  <td className="py-2">{index + 1}.</td>
+                  <td className="py-6 px-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={student.foto || '/images/default-profile.png'}
+                        alt={student.nama}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span>{student.nama}</span>
+                    </div>
                   </td>
-                ))}
-                <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
-                <td className="py-2 px-2">
-                  {attendance[uniqueId]?.tanggal_daftar || "-"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  {["Daftar", "Tidak Daftar"].map((status) => (
+                    <td key={status} className="py-2 px-10">
+                      <input
+                        type="radio"
+                        id={`attendance-${uniqueId}-${status}`}
+                        name={`attendance-${uniqueId}`}
+                        value={status}
+                        checked={attendance[uniqueId]?.status === status}
+                        onChange={() => handleAttendanceChange(uniqueId, status)}
+                        disabled={!isEditing}
+                        className="accent-blue-600"
+                      />
+                      <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
+                        {status}
+                      </label>
+                    </td>
+                  ))}
+                  <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
+                  <td className="py-2 px-2">
+                    {attendance[uniqueId]?.tanggal_daftar || "-"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
+      </div>
       <div className="mt-4 flex space-x-2">
         {(isEditing || !hasAttendanceData) ? (
           <button

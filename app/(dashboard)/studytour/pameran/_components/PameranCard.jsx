@@ -92,7 +92,7 @@ export default function TourCard() {
       <div className="flex-1 flex flex-col justify-center">
         <div className="flex items-center gap-3">
           <FaBullhorn className="text-white text-2xl" />
-          <h2 className="text-white font-semibold text-2xl">Pameran</h2>
+          <h2 className="text-white font-semibold sm:text-2xl text-xl">Pameran</h2>
         </div>
 
         {isEditing ? (
@@ -103,22 +103,22 @@ export default function TourCard() {
             className="text-black font-medium text-xl mt-1 p-1 rounded w-fit"
           />
         ) : (
-          <p className="text-white font-medium text-xl mt-1">
+          <p className="text-white font-medium sm:text-xl text-md mt-1">
             {formattedDate}
           </p>
         )}
 
-        <div className="flex justify-center items-center ml-28 mt-2">
+        <div className="flex justify-center items-center sm:ml-28 ml-0 sm:mt-2 mt-4">
           {isEditing ? (
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="text-black text-3xl font-bold p-1 rounded"
+              className="text-black sm:text-3xl text-2xl font-bold p-1 rounded"
             />
           ) : (
             <p
-              className="text-3xl font-bold text-blue-950"
+              className="sm:text-3xl text-2xl font-bold text-blue-950"
               onClick={() => router.push("/studytourdetail")}
             >
               {title}
@@ -127,7 +127,7 @@ export default function TourCard() {
         </div>
       </div>
 
-      <div className="w-24 h-24 mr-8 overflow-hidden flex-shrink-0 mt-10">
+      <div className="sm:w-24 w-20 sm:h-24 h-20 sm:mr-8 mr2 overflow-hidden flex-shrink-0 mt-10">
         <img
           src="/images/tour.png"
           alt="Foto Study Tour"

@@ -15,7 +15,7 @@ const GenerateButton = ({ onSave }) => {
     <div className="flex flex-col items-center">
       <button
         onClick={() => setIsModalOpen(true)}
-        className="flex items-center bg-blue-600 text-white sm:text-lg text-sm font-bold px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+        className="flex items-center bg-blue-600 text-white sm:text-md text-sm font-bold px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
       >
         <FaExternalLinkAlt className="mr-2" />
         Generate Form

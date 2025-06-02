@@ -67,8 +67,9 @@ const ActivityTable = () => {
           <span>Download</span>
         </button>
       </div>
+<div className="overflow-x-auto whitespace-nowrap">
 
-      <div className="flex space-x-6 mb-4">
+      <div className="flex space-x-6 mb-4 ">
         {["Semua Kegiatan", "Ekstrakurikuler", "Study Tour", "Pameran"].map(category => (
           <label key={category} className="flex items-center space-x-2 cursor-pointer">
             <input
@@ -83,6 +84,7 @@ const ActivityTable = () => {
           </label>
         ))}
       </div>
+</div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-center border border-gray-300">
@@ -103,9 +105,9 @@ const ActivityTable = () => {
                   <td className="px-4 py-2 border">{activity.category}</td>
                   <td className="px-4 py-2 border">{activity.start}</td>
                   <td className="px-4 py-2 border">{activity.end}</td>
-<td className="px-4 py-2 border">
-  {activity.totalDays > 0 ? activity.totalDays : "Selesai"}
-</td>
+                  <td className="px-4 py-2 border">
+                    {activity.totalDays > 0 ? activity.totalDays : "Selesai"}
+                  </td>
                 </tr>
               ))
             ) : (
