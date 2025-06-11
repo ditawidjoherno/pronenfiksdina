@@ -13,6 +13,7 @@ import EventCalendarGuru from "./_components/Kalender";
 import EventCalendar from "./siswa/_components/KalenderSiswa";
 import DaftarEkskul from "./siswa/_components/SekilasEkskul";
 import WelcomeBoxortu from "./_components/OrtuBox";
+import AttendanceTable from "../piket/[siswa]/_components/RiwayatSiswaPiket";
 import dynamic from "next/dynamic";
 
 // Load grafik kehadiran hanya di client
@@ -71,6 +72,7 @@ export default function Beranda() {
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <HarianAbsensi/>
               <DaftarEkskul/>
+              <AttendanceTable/>
             </div>
           </>
         ) : role === "admin" ? (
