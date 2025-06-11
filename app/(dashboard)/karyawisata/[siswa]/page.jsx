@@ -1,11 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
 import InfoKaryaWisata from "./_components/InfoSIswaKarya";
 import ClassGrid from "./_components/SeluruhKelas";
 
-useEffect(() => {
+export default function KaryaWisataPage() {
+  const [isAllowed, setIsAllowed] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
 
     if (userData?.role === "siswa") {
@@ -14,7 +19,7 @@ useEffect(() => {
       setIsAllowed(false);
       router.push("/unauthorized");
     }
-  }, []);
+  }, [router]);
 
   if (isAllowed === null) {
     return <p className="text-center p-4">Memuat halaman absensi...</p>;
@@ -23,8 +28,7 @@ useEffect(() => {
   if (!isAllowed) {
     return null;
   }
-  
-export default function karyawisata() {
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Header */}
@@ -40,17 +44,12 @@ export default function karyawisata() {
         </h1>
 
         <div className="flex justify-center mt-5">
-            <InfoKaryaWisata/>
-          </div>
-
-
-        <div className="bg-white p-4 rounded-2xl shadow-md mt-5 min-h-fit">
-
-          <div className="flex gap-4 items-center ml-4">
-  
+          <InfoKaryaWisata />
         </div>
 
-        <ClassGrid/>
+        <div className="bg-white p-4 rounded-2xl shadow-md mt-5 min-h-fit">
+          <div className="flex gap-4 items-center ml-4"></div>
+          <ClassGrid />
         </div>
       </main>
     </div>

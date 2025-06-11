@@ -14,10 +14,23 @@ export default function HarianAbsensi() {
   const fetchStatus = async (date) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
 
-      const response = await fetch(`http://localhost:8000/api/absensi-hari-ini?tanggal=${date}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const token = localStorage.getItem('token');
+      const userJson = localStorage.getItem('user'); // user harus disimpan di localStorage saat login
+      if (!userJson) throw new Error("User belum login");
+
+      const user = JSON.parse(userJson);
+      const role = user.nisn?.startsWith('OT_') ? 'orangtua' : user.role;
+
+      const endpoint =
+        role === 'orangtua'
+          ? `http://localhost:8000/api/absensi-anak?tanggal=${date}`
+          : `http://localhost:8000/api/absensi-hari-ini?tanggal=${date}`;
+
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -28,7 +41,6 @@ export default function HarianAbsensi() {
       } else {
         setStatusKehadiran(data.status.toLowerCase());
       }
-
     } catch (error) {
       console.error('❌ Gagal ambil absensi:', error.message);
       setStatusKehadiran('belum_absen');

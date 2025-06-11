@@ -9,7 +9,7 @@ export default function DaftarEkskul() {
   useEffect(() => {
     const fetchEkskul = async () => {
       try {
-        const token = localStorage.getItem("token"); // Ambil token dari localStorage
+        const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:8000/api/ekskul-saya", {
           headers: {
             Authorization: `Bearer ${token}`,

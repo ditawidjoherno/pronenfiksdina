@@ -79,6 +79,7 @@ const Sidebar = () => {
       if (item.name === "Absensi" && role === "siswa") return { ...item, path: "/absensi/siswa" };
       if (item.name === "Ekskul" && role === "siswa") return { ...item, path: "/ekskulsiswa" };
       if (item.name === "Piket" && role === "siswa") return { ...item, path: "/piket/siswa" };
+      if (item.name === "Karya Wisata" && role === "siswa") return { ...item, path: "/karyawisata/siswa" };
       return item;
     })
     .filter(item => {

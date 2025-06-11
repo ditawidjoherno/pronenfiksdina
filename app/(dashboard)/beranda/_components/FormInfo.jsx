@@ -11,37 +11,39 @@ export default function FormInformasi({ onAddInfo, onClose }) {
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    const trimmedDate = date?.trim?.() || '';
-    const trimmedTitle = title?.trim?.() || '';
-    const trimmedDescription = description?.trim?.() || '';
+  const trimmedDate = date?.trim?.() || '';
+  const trimmedTitle = title?.trim?.() || '';
+  const trimmedDescription = description?.trim?.() || '';
 
-    if (!trimmedDate || !trimmedTitle || !trimmedDescription) {
-      setError('Semua field wajib diisi!');
-      return;
-    }
+  if (!trimmedDate || !trimmedTitle || !trimmedDescription) {
+    setError('Semua field wajib diisi!');
+    return;
+  }
 
-    const formattedDate = format(new Date(trimmedDate), 'yyyy-MM-dd');
-    const currentTime = format(new Date(), 'HH:mm a');
+  const formattedDate = format(new Date(trimmedDate), 'yyyy-MM-dd');
+  const currentTime = format(new Date(), 'hh:mm a'); // 12 jam dengan AM/PM
 
-    const newInfo = {
-      date: formattedDate,
-      title: trimmedTitle,
-      text: trimmedDescription,
-      time: currentTime,
-      color: 'bg-blue-600',
-    };
-
-    onAddInfo(newInfo);
-    onClose();
-
-    setDate('');
-    setTitle('');
-    setDescription('');
-    setError('');
+  const newInfo = {
+    date: formattedDate,
+    title: trimmedTitle,
+    text: trimmedDescription,
+    time: currentTime,
+    color: 'bg-blue-600', // atau bisa variatif jika backend mendukung
   };
+
+  onAddInfo(newInfo);  // Kirim ke parent yang handle fetch & token
+  onClose();
+
+  // Reset form
+  setDate('');
+  setTitle('');
+  setDescription('');
+  setError('');
+};
+
 
   return (
     <div className="w-full px-4 sm:px-6 flex justify-center">
