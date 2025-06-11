@@ -30,19 +30,32 @@ const user = async (body) => {
     );
 
     setData(response.data);
-    console.log(response);
+console.log(response);
+return response.data; // ✅ ini penting!
+
   } catch (error) {
-    if (error.response) {
-      // Response error dari server
-      setError(error.response.data.message || "Terjadi kesalahan");
-      console.error("Error response:", error.response.data);
-    } else {
-      setError(error.message);
-      console.error("Error:", error.message);
+  if (error.response) {
+    const res = error.response.data ?? {};
+    console.error("📦 Full error object:", error);        // 👈 tambahkan ini
+    console.error("📬 Status:", error.response.status);   // 👈 ini juga
+    console.error("📬 Headers:", error.response.headers); // 👈 tambahan
+
+    let firstError = null;
+    if (res.errors && typeof res.errors === "object") {
+      const values = Object.values(res.errors);
+      if (Array.isArray(values[0])) {
+        firstError = values[0][0];
+      }
     }
-  } finally {
-    setLoading(false);
+
+    setError(firstError || res.message || "Terjadi kesalahan");
+    console.error("❌ Error response:", error.response); // biarkan untuk referensi
+  } else {
+    setError(error.message || "Terjadi kesalahan jaringan");
+    console.error("❌ Error:", error.message);
   }
+}
+
 };
 
 

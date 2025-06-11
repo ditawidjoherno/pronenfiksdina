@@ -8,12 +8,14 @@ export default function ButtonJadwalPiket({ onSimpan }) {
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-[#2D336B] text-white font-bold py-2 px-4 rounded-xl shadow-md hover:bg-blue-700 transition "
-      >
-        <AiFillBell size={24} />
-        Atur Jadwal Piket
-      </button>
+  onClick={() => setIsOpen(true)}
+  className="flex items-center gap-2 bg-[#2D336B] text-white font-bold py-2 px-4 sm:rounded-xl rounded-lg shadow-md hover:bg-blue-700 transition 
+             max-sm:py-1 max-sm:px-3 max-sm:text-sm"
+>
+  <AiFillBell size={24} className="max-sm:w-4 max-sm:h-4" />
+  Atur Jadwal Piket
+</button>
+
 
       {isOpen && (
         <JadwalPiketPopup

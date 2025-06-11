@@ -1,5 +1,4 @@
 "use client"
-import { getCookie } from "@/lib/cookieFunction";
 import axios from "axios";
 import { useState } from "react";
 
@@ -7,13 +6,13 @@ const useUser = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [data, setData] = useState(null)
-  const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME;
-  const token = getCookie(cookieName)
 
   const getUserData = async () => {
-    setLoading(true)
-    setError(null)
-    setData(null)
+    setLoading(true);
+    setError(null);
+    setData(null);
+
+    const token = localStorage.getItem("token");
 
     if (!token) {
       setError("Token tidak ditemukan");
@@ -35,9 +34,9 @@ const useUser = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  return { loading, error, data, getUserData }
-}
+  return { loading, error, data, getUserData };
+};
 
 export default useUser;

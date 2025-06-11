@@ -1,25 +1,25 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/Sidebar";
 import Header from "@/app/_components/Header";
 import AbsensiForm from "./_components/AbsensiForm";
 import AbsensiAlert from "./_components/AllertBox";
-import StudentCard from "./_components/KehadiranBulanan";
-import AttendanceTable from "./_components/RiwayatSiswa";
+import HalamanAbsensi from "./_components/HalamanAbsensi"; // ✅ Import ini
 
 export default function AbsensiSiswaPage() {
   const router = useRouter();
-  const [isAllowed, setIsAllowed] = useState(null); // null = loading
+  const [isAllowed, setIsAllowed] = useState(null);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
-    
+
     if (userData?.role === "siswa") {
       setIsAllowed(true);
     } else {
       setIsAllowed(false);
-      router.push("/unauthorized"); // atau ke "/beranda"
+      router.push("/unauthorized");
     }
   }, []);
 
@@ -28,7 +28,7 @@ export default function AbsensiSiswaPage() {
   }
 
   if (!isAllowed) {
-    return null; // atau tampilkan spinner
+    return null;
   }
 
   return (
@@ -40,11 +40,7 @@ export default function AbsensiSiswaPage() {
         <h1 className="text-3xl font-bold mt-14 mb-6 text-black">Absensi Apel Pagi</h1>
 
         <div className="mb-4">
-          <StudentCard />
-        </div>
-
-        <div className="mb-4">
-          <AttendanceTable />
+          <HalamanAbsensi /> {/* ✅ Komponen sinkron */}
         </div>
 
         <div className="mb-4">

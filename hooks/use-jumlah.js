@@ -4,16 +4,16 @@ import axios from "axios";
 import { useState } from "react";
 
 const useJumlah = () => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [data, setData] = useState(null)
-  const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME;
-  const token = getCookie(cookieName)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const getUserJumlah = async () => {
-    setLoading(true)
-    setError(null)
-    setData(null)
+    setLoading(true);
+    setError(null);
+    setData(null);
 
     if (!token) {
       setError("Token tidak ditemukan");
@@ -28,17 +28,16 @@ const useJumlah = () => {
         },
       });
 
-      // ✅ Sesuaikan response key
-      const userData = response.data;
-      setData(userData);
+      setData(response.data);
     } catch (error) {
       setError(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  return { loading, error, data, getUserJumlah }
-}
+  return { loading, error, data, getUserJumlah };
+};
+
 
 export default useJumlah;

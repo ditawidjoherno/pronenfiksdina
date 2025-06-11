@@ -19,7 +19,7 @@ const BoxTiga = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 gap-2 mt-5 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 gap-2 sm:mt-5 mt-3 w-full">
         {/* Box Siswa */}
         <div
           className="bg-purple-700 text-white rounded-xl p-5 sm:p-6 lg:p-8 flex items-center shadow-lg cursor-pointer hover:bg-purple-800 transition-all duration-200"
@@ -58,7 +58,7 @@ const BoxTiga = () => {
           </div>
           <div className="ml-4 sm:ml-6">
             <h2 className="text-lg sm:text-xl font-semibold">Total</h2>
-            <p className="text-base sm:text-lg font-bold">{data?.total}</p>
+            <p className="text-base sm:text-lg font-bold">{(data?.siswa || 0) + (data?.guru || 0)}</p>
           </div>
         </div>
       </div>

@@ -5,10 +5,10 @@ const WelcomeBox = () => {
   return (
     <div className="flex flex-col w-full max-w-7xl mx-auto mt-10 px-4">
       {/* Box utama */}
-      <div className="bg-white rounded-lg shadow-lg w-full py-6 px-4 sm:px-6 md:px-10">
+      <div className="bg-white sm:rounded-lg rounded-xl shadow-lg w-full py-3 px-4 sm:px-6 md:px-10">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8">
           {/* Teks - tampil duluan di mobile */}
-          <div className="text-center md:text-left md:order-1 mt-4 md:mt-6">
+          <div className="text-center md:text-left md:order-1 mt-1 md:mt-6">
   <h2 className="sm:text-2xl text-xl font-semibold text-[#070841]">Hai, Teacher!</h2>
   <h1 className="sm:text-xl text-md font-poppins">
     Selamat datang di SEVH!

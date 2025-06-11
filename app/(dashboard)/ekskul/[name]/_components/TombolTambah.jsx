@@ -19,9 +19,9 @@ const GreenButton = () => {
 {/* Popup Form */}
 {isOpen && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40">
-    <div className="bg-white p-6 rounded-lg relative z-50">
+    <div className="p-6 rounded-lg relative z-50">
       <button
-        className="absolute w-10 h-10 top-2 right-2 bg-red-500 text-white rounded-xl p-2"
+        className="absolute w-10 h-10 sm:mt-2 mt-8 sm:right-8 right-10 bg-red-500 text-white rounded-full p-2"
         onClick={() => setIsOpen(false)}
       >
         ✕

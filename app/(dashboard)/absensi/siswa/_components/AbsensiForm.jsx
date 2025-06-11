@@ -1,54 +1,76 @@
 'use client';
+
+import { useEffect, useState } from "react";
 import { IoPersonSharp } from "react-icons/io5";
 
-const students = [
-  { id: 1, name: 'Akio Anak Baik Sekali', status: 'Hadir', time: '07:30 AM' },
-  { id: 2, name: 'Akio Anak Baik Sekali', status: 'Tidak Hadir', time: '-' },
-  { id: 3, name: 'Akio Anak Baik Sekali', status: 'Terlambat', time: '07:50 AM' },
-  { id: 4, name: 'Akio Anak Baik Sekali', status: 'Hadir', time: '07:32 AM' },
-  { id: 5, name: 'Akio Anak Baik Sekali', status: 'Hadir', time: '07:29 AM' },
-];
-
 export default function AbsensiViewer() {
-  const day = 'Senin, 07-04-2025';
-  const startTime = '07:30 AM';
-  const endTime = '08:00 AM';
-  const lastEdit = 'Senin, 07 April 2025 - 08:05 AM';
+  const [students, setStudents] = useState([]);
+  const [kelas, setKelas] = useState("-");
+  const [lastEdit, setLastEdit] = useState(null);
+  const [day, setDay] = useState("-");
+  const [startTime, setStartTime] = useState("-");
+  const [endTime, setEndTime] = useState("-");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem('token');
+
+      try {
+        // Ambil data user
+        const resUser = await fetch("http://localhost:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+        const resultUser = await resUser.json();
+        const kelasUser = resultUser.user.kelas;
+        setKelas(kelasUser);
+
+        // Ambil data absensi hari ini
+        const resAbsensi = await fetch(`http://localhost:8000/api/absensi-hari-ini-kelas?kelas=${kelasUser}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+        const resultAbsensi = await resAbsensi.json();
+        console.log("✅ Absensi hari ini:", resultAbsensi);
+        console.log("🎯 resultAbsensi:", resultAbsensi);
+
+        setStudents(resultAbsensi.data || []);
+        setDay(resultAbsensi.hari || "-");
+        setStartTime(resultAbsensi.mulai || "-");
+        setEndTime(resultAbsensi.selesai || "-");
+        setLastEdit(resultAbsensi.last_edit);
+      } catch (err) {
+        console.error("❌ Gagal ambil data:", err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getAccentColor = (status) => {
     switch (status) {
-      case 'Hadir':
-        return '#5CB338';
-      case 'Tidak Hadir':
-        return '#FB4141';
-      case 'Terlambat':
-        return '#FFBB03';
-      default:
-        return '#000000';
+      case 'Hadir': return '#5CB338';
+      case 'Tidak Hadir': return '#FB4141';
+      case 'Terlambat': return '#FFBB03';
+      default: return '#ccc';
     }
   };
 
-  const totalHadir = students.filter((s) => s.status === 'Hadir').length;
-  const totalTidakHadir = students.filter((s) => s.status === 'Tidak Hadir').length;
-  const totalTerlambat = students.filter((s) => s.status === 'Terlambat').length;
-
   return (
     <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white">
-      {/* Info */}
+      {/* Info Kelas */}
       <div className="mb-4 ml-5 gap-4">
-        <div className="flex"><strong className="w-28">Kelas</strong> <span>: X-A</span></div>
+        <div className="flex"><strong className="w-28">Kelas</strong> <span>: {kelas}</span></div>
         <div className="flex"><strong className="w-28">Hari</strong> <span>: {day}</span></div>
         <div className="flex"><strong className="w-28">Mulai</strong> <span>: {startTime}</span></div>
         <div className="flex"><strong className="w-28">Selesai</strong> <span>: {endTime}</span></div>
       </div>
-      <div className="mt-2 text-sm text-gray-700 flex justify-end">
-        <p className="flex items-center gap-2">
-        <IoPersonSharp />
-          Stevanie Mawuntu
-        </p>
-      </div>
 
-      {/* Tabel */}
+      {/* Tabel Siswa */}
       <table className="w-full border-t border-gray-300 mt-5">
         <thead>
           <tr className="border-b border-gray-300">
@@ -64,8 +86,8 @@ export default function AbsensiViewer() {
           {students.map((student, index) => (
             <tr key={student.id} className="border-b border-gray-300 text-center">
               <td className="py-2">{index + 1}.</td>
-              <td className="py-6 pl-3">{student.name}</td>
-              {['Hadir', 'Tidak Hadir', 'Terlambat'].map((status) => {
+              <td className="py-6 pl-3">{student.nama}</td>
+              {["Hadir", "Tidak Hadir", "Terlambat"].map((status) => {
                 const isChecked = student.status === status;
                 return (
                   <td key={status} className="py-2 px-10">
@@ -82,32 +104,18 @@ export default function AbsensiViewer() {
                   </td>
                 );
               })}
-              <td className="py-2">{student.time}</td>
+              <td className="py-2">{student.waktu || '-'}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Box Jumlah */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#5CB338] text-white p-4 rounded-xl text-center shadow-md">
-          <h4 className="text-md font-semibold">Jumlah Hadir</h4>
-          <p className="text-2xl">{totalHadir}</p>
-        </div>
-        <div className="bg-[#FB4141] text-white p-4 rounded-xl text-center shadow-md">
-          <h4 className="text-md font-semibold">Jumlah Tidak Hadir</h4>
-          <p className="text-2xl">{totalTidakHadir}</p>
-        </div>
-        <div className="bg-[#FFBB03] text-white p-4 rounded-xl text-center shadow-md">
-          <h4 className="text-md font-semibold">Jumlah Terlambat</h4>
-          <p className="text-2xl">{totalTerlambat}</p>
-        </div>
-      </div>
-
       {/* Last Edit */}
-      <div className="mt-6 text-sm text-gray-600 ml-2">
-        <p><strong>Terakhir Diedit:</strong> {lastEdit}</p>
-      </div>
+      {lastEdit && (
+        <div className="mt-6 text-sm text-gray-600 ml-2">
+          <p><strong>Terakhir Diedit:</strong> {lastEdit}</p>
+        </div>
+      )}
     </div>
   );
 }

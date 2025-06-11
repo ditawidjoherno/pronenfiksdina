@@ -2,17 +2,16 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { FaPlus, FaUser } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import { IoMdLogIn } from 'react-icons/io';
 import axios from 'axios';
 
 export default function EkskulList() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [ekskulData, setEkskulData] = useState([]);
 
-  const API_URL = 'http://localhost:8000/api/ekskul';
+  const API_URL = 'http://localhost:8000/api/ekskul-saya'; // ✅ Hanya ekskul milik siswa
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,30 +56,19 @@ export default function EkskulList() {
   };
 
   const handleMasukClick = async (ekskul) => {
-  const updatedEkskul = await fetchEkskulById(ekskul.id);
-  localStorage.setItem("selectedEkskul", JSON.stringify(updatedEkskul));
+    const updatedEkskul = await fetchEkskulById(ekskul.id);
+    localStorage.setItem("selectedEkskul", JSON.stringify(updatedEkskul));
 
-  const formattedName = ekskul.name
-    .toLowerCase()
-    .replace(/\s+/g, '-')         // ganti spasi jadi strip
-    .replace(/[^a-z0-9\-]/g, ''); // hapus karakter aneh
+    const formattedName = ekskul.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '');
 
-  router.push(`/ekskulsiswa/${formattedName}`);
-};
-
-
-  const handleAddEkskul = (newEkskul) => {
-    setEkskulData((prev) => [...prev, newEkskul]);
-    setIsPopupOpen(false);
+    router.push(`/ekskulsiswa/${formattedName}`);
   };
 
   return (
     <div className="p-6 bg-gray-50 flex-1 mt-10 max-w-7xl rounded-md">
-
-      {isPopupOpen && (
-        <PopupForm onAddEkskul={handleAddEkskul} onClose={() => setIsPopupOpen(false)} />
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {ekskulData.length === 0 ? (
           <p className="text-center text-gray-500 col-span-2">Belum ada data ekskul.</p>

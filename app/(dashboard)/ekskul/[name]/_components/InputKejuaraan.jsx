@@ -50,14 +50,14 @@ export default function InputKejuaraan({ ekskulId, onSuccess, initialData }) {
       const data = await res.json();
       alert("Gagal menyimpan: " + (data.message || "Terjadi kesalahan."));
     } catch (err) {
-      console.error("\u274c Error:", err);
+      console.error("❌ Error:", err);
       alert("Terjadi kesalahan saat menyimpan data.");
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-96 relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 px-4">
+      <div className="bg-white p-6 rounded-xl shadow-lg w-96 max-sm:w-[90%] max-sm:max-h-[90vh] max-sm:overflow-y-auto relative">
         <button className="absolute top-4 right-4" onClick={onSuccess}>
           <AiFillCloseCircle className="w-6 h-6 text-red-500" />
         </button>

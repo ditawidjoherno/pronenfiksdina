@@ -21,7 +21,7 @@ const LoginForm = () => {
 
     return (
         <div className="flex items-center justify-center min-h-screen transform translate-y-20">
-            <div className="w-[320px] p-4 px-6 bg-white shadow-2xl rounded-2xl max-h-[450px]"
+            <div className="sm:w-[320px] w-[260px] p-4 px-6 bg-white shadow-2xl rounded-2xl sm:max-h-[450px] max-h-[350px]"
                 style={{ boxShadow: "8px 8px 8px rgba(0, 0, 0, 0.3)" }}>
                 
                 {/* Logo */}
@@ -29,8 +29,8 @@ const LoginForm = () => {
                     <img src="/images/logosevh.png" alt="Logo" className="w-10 h-10" />
                 </div>
 
-                <h1 className="text-xl font-bold text-center text-[#011E43]">Selamat Datang!</h1>
-                <h2 className="text-sm font-light text-center text-[#011E43] mb-4">Silahkan login ke Akun anda</h2>
+                <h1 className="sm:text-xl text-lg font-bold text-center text-[#011E43]">Selamat Datang!</h1>
+                <h2 className="sm:text-sm text-xs font-light text-center text-[#011E43] mb-4">Silahkan login ke Akun anda</h2>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="relative">

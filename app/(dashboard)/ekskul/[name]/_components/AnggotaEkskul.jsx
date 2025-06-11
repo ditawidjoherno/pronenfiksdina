@@ -1,58 +1,58 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
-import { FaSearch, FaFilter, FaUserPlus, FaUsers, FaTrash } from "react-icons/fa";
+import { FaUserPlus, FaUsers, FaTrash } from "react-icons/fa";
 import TambahAnggotaForm from "./FormTambahAnggota";
+import DetailSiswaPopup from "./DetailSiswa";
 
 export default function AnggotaEkskul() {
   const [anggotaEkskul, setAnggotaEkskul] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [anggotaToDelete, setAnggotaToDelete] = useState(null);
+  const [detailPopup, setDetailPopup] = useState(null);
 
   const fetchAnggotaEkskul = async () => {
-  const ekskul = JSON.parse(localStorage.getItem("selectedEkskul"));
-  const ekskulId = ekskul?.id;
+    const ekskul = JSON.parse(localStorage.getItem("selectedEkskul"));
+    const ekskulId = ekskul?.id;
+    if (!ekskulId) return;
 
-  if (!ekskulId) return;
-
-  try {
-    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
-      headers: { Accept: "application/json" },
-    });
-    const data = await res.json();
-    setAnggotaEkskul(data);
-  } catch (err) {
-    console.error("❌ Gagal fetch anggota ekskul:", err);
-  }
-};
+    try {
+      const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
+        headers: { Accept: "application/json" },
+      });
+      const data = await res.json();
+      setAnggotaEkskul(data);
+    } catch (err) {
+      console.error("❌ Gagal fetch anggota ekskul:", err);
+    }
+  };
 
   useEffect(() => {
-  fetchAnggotaEkskul();
-}, []);
+    fetchAnggotaEkskul();
+  }, []);
 
   const handleAddAnggota = async (anggotaBaru) => {
-  const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
-  if (!ekskulId) return;
+    const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
+    if (!ekskulId) return;
 
-  try {
-    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(anggotaBaru),
-    });
+    try {
+      const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/anggota`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(anggotaBaru),
+      });
 
-    if (!res.ok) throw new Error("Gagal menambahkan anggota");
-    await fetchAnggotaEkskul();
-  } catch (err) {
-    console.error("❌ Error saat tambah anggota:", err);
-    alert("Gagal menambahkan anggota. Cek konsol.");
-  }
-};
-
+      if (!res.ok) throw new Error("Gagal menambahkan anggota");
+      await fetchAnggotaEkskul();
+    } catch (err) {
+      console.error("❌ Error saat tambah anggota:", err);
+      alert("Gagal menambahkan anggota. Cek konsol.");
+    }
+  };
 
   const confirmDeleteAnggota = (anggota) => {
     setAnggotaToDelete(anggota);
@@ -80,24 +80,25 @@ export default function AnggotaEkskul() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-2 bg-white rounded-2xl shadow-lg p-3 relative">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b pb-3 mb-1">
+    <div className="max-w-4xl mx-auto mt-2 bg-white rounded-2xl shadow-lg p-3 relative max-sm:px-2 h-[510px] flex flex-col">
+      <div className="flex items-center justify-between border-b pb-3 mb-1 max-sm:flex-col max-sm:items-start max-sm:gap-2">
         <div className="flex items-center gap-3 font-semibold text-xl">
           <FaUsers className="text-gray-700" />
           <span>Anggota Ekskul</span>
         </div>
-        <div className="flex gap-4 text-gray-700 text-lg">
-          <FaSearch className="cursor-pointer" />
-          <FaFilter className="cursor-pointer" />
+        <div className="border-gray-600 border-1 flex items-center sm:ml-0 gap-2 text-gray-700">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="bg-gray-100 px-3 py-1 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
       </div>
 
-      {/* Tabel Anggota */}
-      <div className="max-h-[400px] overflow-y-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-white">
-            <tr className="text-gray-700 border-b mt-10">
+      <div className="flex-1 overflow-y-auto">
+        <table className="w-full text-left text-sm max-sm:text-xs">
+          <thead className="sticky top-0 bg-white z-10">
+            <tr className="text-gray-700 border-b">
               <th className="py-3 w-12 pl-4">No</th>
               <th className="text-center w-40">Nama</th>
               <th className="text-center w-32">NISN</th>
@@ -107,31 +108,24 @@ export default function AnggotaEkskul() {
           </thead>
           <tbody>
             {anggotaEkskul.map((anggota, index) => (
-              <tr key={anggota.id} className="border-b">
+              <tr key={anggota.id} className="border-b max-sm:text-xs">
                 <td className="py-4 text-center">{index + 1}.</td>
                 <td className="py-4 text-left">
-  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 max-sm:gap-2">
                     <img
                       src="/images/profilsiswa.jpg"
                       alt="avatar"
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="font-medium">{anggota.nama}</span>
+                    <button onClick={() => setDetailPopup(anggota)}>{anggota.nama}</button>
                   </div>
                 </td>
-                <td className="py-4 text-center">{anggota.nisn || '-'}</td>
+                <td className="py-4 text-center">{anggota.nisn || "-"}</td>
                 <td className="py-4 text-center">{anggota.kelas}</td>
                 <td className="py-4 text-center">
-                  <div className="flex justify-center items-center gap-2">
-                    <span
-                      className={`w-4 h-4 rounded-full inline-block ${
-                        anggota.status === "green" ? "bg-green-500" : "bg-orange-500"
-                      }`}
-                    ></span>
-                    <button onClick={() => confirmDeleteAnggota(anggota)}>
-                      <FaTrash className="text-red-500 hover:text-red-700" />
-                    </button>
-                  </div>
+                  <button onClick={() => confirmDeleteAnggota(anggota)}>
+                    <FaTrash className="text-red-500 hover:text-red-700" />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -139,18 +133,16 @@ export default function AnggotaEkskul() {
         </table>
       </div>
 
-      {/* Tombol Tambah */}
-      <div className="flex justify-center mt-5">
+      <div className="flex justify-center mt-3">
         <button
           onClick={() => setIsPopupOpen(true)}
-          className="w-[250px] h-[40px] bg-blue-600 text-white flex items-center justify-center gap-3 py-3 rounded-lg text-lg hover:bg-blue-700 transition"
+          className="w-[250px] h-[40px] bg-blue-600 text-white flex items-center justify-center gap-3 py-3 rounded-lg text-lg hover:bg-blue-700 transition max-sm:w-full"
         >
           <FaUserPlus />
           Tambah Anggota
         </button>
       </div>
 
-      {/* Modal Tambah Anggota */}
       {isPopupOpen && (
         <TambahAnggotaForm
           onAddAnggota={handleAddAnggota}
@@ -158,9 +150,8 @@ export default function AnggotaEkskul() {
         />
       )}
 
-      {/* Modal Konfirmasi Hapus */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 px-4">
           <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
             <p className="mb-4 font-semibold">Yakin ingin menghapus anggota ini?</p>
             <div className="flex justify-center gap-4">
@@ -183,6 +174,13 @@ export default function AnggotaEkskul() {
           </div>
         </div>
       )}
+
+      {detailPopup && (
+  <DetailSiswaPopup
+    onClose={() => setDetailPopup(null)}
+    anggota={detailPopup}
+  />
+)}
     </div>
   );
 }

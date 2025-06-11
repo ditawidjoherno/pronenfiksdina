@@ -24,8 +24,8 @@ const ClassCards = () => {
   };
 
   return (
-    <div className="p-8 w-full h-screen mb-10 -mt-5">
-      <div className="grid grid-cols-3 gap-6 mt-6">
+    <div className="bg-white rounded-lg shadow-md p-8 w-full mt-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
         {classes.map((className, index) => (
           <button
             key={index}

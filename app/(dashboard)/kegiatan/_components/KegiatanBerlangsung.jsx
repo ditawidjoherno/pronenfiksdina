@@ -1,15 +1,33 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { IoClose } from 'react-icons/io5';
 
-export default function ActivityNowPopup({ onClose }) { 
-  const activities = [
-    { name: "Pramuka", category: "Ekstrakulikuler", start: "01-Jan-2025", end: "30-Jun-2025", type: "Wajib", totalDays: 181 },
-    { name: "Maengket", category: "Ekstrakulikuler", start: "01-Jan-2025", end: "31-Dec-2025", type: "Tidak Wajib", totalDays: 365 },
-    { name: "Bali Tour", category: "Study Tour", start: "10-Mar-2025", end: "20-Mar-2025", type: "Wajib", totalDays: 10 },
-    { name: "Pameran Seni", category: "Pameran", start: "05-May-2025", end: "07-May-2025", type: "Tidak Wajib", totalDays: 3 },
-  ];
+export default function ActivityNowPopup({ onClose }) {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchActivities() {
+      try {
+        const res = await fetch('http://localhost:8000/api/aktivitas/ongoing'); // ganti dengan endpoint API kamu
+        const json = await res.json();
+        if (json.status === 'success') {
+          setActivities(json.data);
+        } else {
+          setActivities([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch activities:', error);
+        setActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchActivities();
+  }, []);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-40" onClick={onClose}>
@@ -26,7 +44,7 @@ export default function ActivityNowPopup({ onClose }) {
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">Kegiatan Berlangsung</h2>
             <span className="bg-white text-blue-400 text-xs font-bold px-3 py-1 rounded-full">
-              {activities.length} Jumlah
+              {loading ? '...' : activities.length} Jumlah
             </span>
           </div>
           <button onClick={onClose} className="bg-white p-1 rounded-full text-blue-400 hover:bg-gray-200 transition">
@@ -36,30 +54,34 @@ export default function ActivityNowPopup({ onClose }) {
 
         {/* Konten Table */}
         <div className="p-5 overflow-y-auto max-h-80">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="p-3 text-left">Nama Kegiatan</th>
-                <th className="p-3 text-left">Kategori</th>
-                <th className="p-3 text-left">Start</th>
-                <th className="p-3 text-left">End</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-left">Total Days</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activities.map((activity, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50 transition">
-                  <td className="p-3">{activity.name}</td>
-                  <td className="p-3">{activity.category}</td>
-                  <td className="p-3">{activity.start}</td>
-                  <td className="p-3">{activity.end}</td>
-                  <td className="p-3">{activity.type}</td>
-                  <td className="p-3">{activity.totalDays}</td>
+          {loading ? (
+            <p className="text-center text-gray-500">Memuat kegiatan...</p>
+          ) : activities.length === 0 ? (
+            <p className="text-center text-gray-500">Tidak ada kegiatan berlangsung saat ini.</p>
+          ) : (
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700">
+                  <th className="p-3 text-left">Nama Kegiatan</th>
+                  <th className="p-3 text-left">Kategori</th>
+                  <th className="p-3 text-left">Start</th>
+                  <th className="p-3 text-left">End</th>
+                  <th className="p-3 text-left">Total Days</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {activities.map((activity, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50 transition">
+                    <td className="p-3">{activity.name}</td>
+                    <td className="p-3">{activity.category}</td>
+                    <td className="p-3">{new Date(activity.start).toLocaleDateString('id-ID')}</td>
+                    <td className="p-3">{new Date(activity.end).toLocaleDateString('id-ID')}</td>
+                    <td className="p-3">{activity.totalDays}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Footer Modal */}

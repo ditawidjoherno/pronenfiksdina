@@ -21,48 +21,43 @@ export default function AttendanceForm() {
   const kelas = searchParams.get("kelas") || "";
   const [hasAttendanceData, setHasAttendanceData] = useState(false);
   const [lastDate, setLastDate] = useState(new Date().toISOString().slice(0, 10));
+  const [notification, setNotification] = useState(null);
 
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
-    useEffect(() => {
-      if (!kelas) return;
-  
-      const fetchStudents = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await fetch(
-            `http://localhost:8000/api/siswa-kelas?kelas=${encodeURIComponent(kelas)}`
-          );
-          if (!response.ok) throw new Error("Gagal mengambil data siswa");
-  
-          const data = await response.json();
-          setStudents(data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchStudents();
-    }, [kelas]);
+  useEffect(() => {
+    if (!kelas) return;
+    const fetchStudents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`http://localhost:8000/api/siswa-kelas?kelas=${encodeURIComponent(kelas)}`);
+        if (!response.ok) throw new Error("Gagal mengambil data siswa");
+        const data = await response.json();
+        setStudents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudents();
+  }, [kelas]);
 
-      const filteredStudents = students
+  const filteredStudents = students
     .filter((student) => student.nisn)
-    .filter((student) =>
-      student.nama.toLowerCase().includes(search.toLowerCase())
-    );
+    .filter((student) => student.nama.toLowerCase().includes(search.toLowerCase()));
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
-
     const fetchPiket = async () => {
       try {
         const res = await fetch(`http://localhost:8000/api/absensi-piket?kelas=${kelas}&tanggal=${today}`);
         if (!res.ok) throw new Error("Gagal mengambil data absensi");
-
         const data = await res.json();
-
         if (!data.data || data.data.length === 0) {
           setHasAttendanceData(false);
           setAttendance({});
@@ -73,11 +68,9 @@ export default function AttendanceForm() {
           setIsEditable(true);
         } else {
           setHasAttendanceData(true);
-
           setDay(data.hari || "");
           setStartTime(data.mulai || "");
           setEndTime(data.selesai || "");
-
           const piketMap = {};
           data.data.forEach(item => {
             if (item.nisn) {
@@ -87,12 +80,10 @@ export default function AttendanceForm() {
               };
             }
           });
-
           setAttendance(piketMap);
           setIsEditing(false);
           setIsEditable(false);
         }
-
         setPiketFetched(true);
       } catch (error) {
         console.error("Error fetching piket:", error.message);
@@ -101,17 +92,13 @@ export default function AttendanceForm() {
         setIsEditable(true);
       }
     };
-
     if (kelas) fetchPiket();
   }, [kelas]);
 
   const handleAttendanceChange = (nisn, status) => {
     if (!isEditing) return;
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`; // pasti H:i tanpa detik
-
+    const formattedTime = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
     setAttendance((prev) => ({
       ...prev,
       [nisn]: {
@@ -122,44 +109,29 @@ export default function AttendanceForm() {
     setLastEdit(new Date().toLocaleString());
   };
 
-
-const handleGenerate = () => {
-  const now = new Date();
-  const dayName = now.toLocaleDateString("id-ID", { weekday: "long" });
-  const date = now.toLocaleDateString("id-ID"); // contoh: 22/05/2025
-  const fullDay = `${dayName}, ${date}`;
-  setDay(fullDay); // <-- Ini penting
-
-  const start = `${now.getHours().toString().padStart(2, "0")}:${now
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
-
-  const endTimeObj = new Date(now.getTime() + 30 * 60000);
-  const end = `${endTimeObj.getHours().toString().padStart(2, "0")}:${endTimeObj
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
-
-  setStartTime(start);
-  setEndTime(end);
-
-  setIsEditable(true);
-};
-
+  const handleGenerate = () => {
+    const now = new Date();
+    const dayName = now.toLocaleDateString("id-ID", { weekday: "long" });
+    const date = now.toLocaleDateString("id-ID");
+    setDay(`${dayName}, ${date}`);
+    const start = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    const endTimeObj = new Date(now.getTime() + 30 * 60000);
+    const end = `${endTimeObj.getHours().toString().padStart(2, "0")}:${endTimeObj.getMinutes().toString().padStart(2, "0")}`;
+    setStartTime(start);
+    setEndTime(end);
+    setIsEditable(true);
+  };
 
   const handleSave = async () => {
     if (!day || !startTime || !endTime) {
-      alert("Klik Generate dulu sebelum Save");
+      showNotification("Klik Generate dulu sebelum Save", "error");
       return;
     }
-
     const piketArray = Object.entries(attendance).map(([nisn, value]) => ({
       nisn,
       status: value.status,
       waktu_absen: value.time,
     }));
-
     const payload = {
       kelas,
       tanggal: new Date().toISOString().slice(0, 10),
@@ -168,31 +140,26 @@ const handleGenerate = () => {
       selesai: endTime,
       piket: piketArray,
     };
-
     try {
       const response = await fetch("http://localhost:8000/api/input-piket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const err = await response.json();
-        alert("Gagal menyimpan: " + JSON.stringify(err));
+        showNotification("Gagal menyimpan: " + JSON.stringify(err), "error");
         return;
       }
-
-      alert("piket berhasil disimpan!");
+      showNotification("Piket berhasil disimpan!", "success");
       setIsEditing(false);
       setIsEditable(false);
     } catch (err) {
-      alert("Gagal: " + err.message);
+      showNotification("Gagal: " + err.message, "error");
     }
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const resetForm = () => {
     setAttendance({});
@@ -213,32 +180,15 @@ const handleGenerate = () => {
         setLastDate(today);
       }
     }, 60000);
-
-    const today = new Date().toISOString().slice(0, 10);
-    if (today !== lastDate) {
-      resetForm();
-      setLastDate(today);
-    }
-
     return () => clearInterval(intervalId);
   }, [lastDate]);
 
-
   useEffect(() => {
     if (!endTime) return;
-
     const checkEndTime = () => {
       const now = new Date();
       const [endHour, endMinute] = endTime.split(":").map(Number);
-      const endDateTime = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        endHour,
-        endMinute,
-        0
-      );
-
+      const endDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
       if (now >= endDateTime) {
         setAttendance((prev) => {
           const updated = {};
@@ -255,118 +205,83 @@ const handleGenerate = () => {
       }
     };
     checkEndTime();
-
     const intervalId = setInterval(checkEndTime, 60000);
-
     return () => clearInterval(intervalId);
   }, [endTime]);
 
   return (
-    <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white">
-      <style>
-        {`
-          input[type="radio"]:disabled {
-            accent-color: black;
-            cursor: not-allowed;
-          }
-        `}
-      </style>
+    <div className="max-w-7xl mx-auto p-5 border rounded-2xl shadow-md bg-white relative">
+      {/* Notifikasi popup */}
+     {notification && (
+  <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+    px-6 py-3 rounded shadow-xl z-50 text-center text-white text-sm
+    ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+    {notification.message}
+  </div>
+)}
 
-      {/* Bagian Info */}
-       <div className="mb-4 ml-5 gap-4">
-        <div className="flex">
-          <strong className="w-28">Kelas</strong> <span>: {kelas}</span>
-        </div>
-        <div className="flex">
-          <strong className="w-28">Hari</strong> <span>:</span>
-          {day && (
-            <span> {` ${day}`}</span>
+      <style>{`input[type="radio"]:disabled { accent-color: black; cursor: not-allowed; }`}</style>
 
-          )}
-        </div>
-        <div className="flex">
-          <strong className="w-28">Mulai</strong>
-          <span>: {startTime}</span>
-        </div>
-        <div className="flex">
-          <strong className="w-28">Selesai</strong>
-          <span>: {endTime}</span>
-        </div>
+      {/* Info Kelas */}
+      <div className="mb-4 ml-5 gap-4 max-sm:ml-2 max-sm:text-sm max-sm:space-y-1">
+        <div className="flex max-sm:flex-col max-sm:items-start"><strong className="w-28 max-sm:w-auto">Kelas</strong> <span>: {kelas}</span></div>
+        <div className="flex max-sm:flex-col max-sm:items-start"><strong className="w-28 max-sm:w-auto">Hari</strong><span>: {day && ` ${day}`}</span></div>
+        <div className="flex max-sm:flex-col max-sm:items-start"><strong className="w-28 max-sm:w-auto">Mulai</strong><span>: {startTime}</span></div>
+        <div className="flex max-sm:flex-col max-sm:items-start"><strong className="w-28 max-sm:w-auto">Selesai</strong><span>: {endTime}</span></div>
       </div>
 
       {/* Tombol Generate */}
-      <div className="py-4 text-center -mt-6">
-        <button
-          className="px-4 py-2 bg-blue-700 text-white rounded-md flex items-center justify-center gap-2"
-          onClick={handleGenerate}
-        >
-          <FaExternalLinkAlt size={16} />
+      <div className="py-4 text-center -mt-6 max-sm:-mt-3">
+        <button className="px-4 py-2 bg-blue-700 text-white rounded-md flex items-center justify-center gap-2 text-sm max-sm:text-xs max-sm:px-3 max-sm:py-1" onClick={handleGenerate}>
+          <FaExternalLinkAlt size={14} className="max-sm:w-3 max-sm:h-3" />
           Generate Absensi
         </button>
       </div>
 
       {/* Tabel Absensi */}
-      <table className="w-full border-t border-gray-300">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2">No</th>
-            <th className="py-2">Nama</th>
-            <th className="py-2">Berkontribusi</th>
-            <th className="py-2">Tidak Berkontribusi</th>
-            <th className="py-2">Waktu</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="overflow-x-auto max-sm:-mx-4">
+        <table className="min-w-full border-t border-gray-300 text-sm max-sm:text-xs">
+          <thead>
+            <tr className="border-b border-gray-300">
+              <th className="py-2">No</th>
+              <th className="py-2">Nama</th>
+              <th className="py-2">Berkontribusi</th>
+              <th className="py-2">Tidak Berkontribusi</th>
+              <th className="py-2">Waktu</th>
+            </tr>
+          </thead>
+          <tbody>
             {filteredStudents.map((student, index) => {
               const uniqueId = student.nisn;
               return (
-                <tr
-                  key={`${student.id ?? index}-${index}`}
-                  className="border-b border-gray-300 text-center"
-                >
+                <tr key={`${student.id ?? index}-${index}`} className="border-b border-gray-300 text-center">
                   <td className="py-2">{index + 1}.</td>
                   <td className="py-6 pl-3 text-left">{student.nama}</td>
                   {["berkontribusi", "tidak berkontribusi"].map((status) => (
                     <td key={status} className="py-2 px-10">
-                      <input
-                        type="radio"
-                        id={`attendance-${uniqueId}-${status}`}
-                        name={`attendance-${uniqueId}`}
-                        value={status}
+                      <input type="radio" id={`attendance-${uniqueId}-${status}`} name={`attendance-${uniqueId}`} value={status}
                         checked={attendance[uniqueId]?.status === status}
                         onChange={() => handleAttendanceChange(uniqueId, status)}
                         disabled={!isEditing}
                         className="accent-blue-600"
                       />
-                      <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">
-                        {status}
-                      </label>
+                      <label htmlFor={`attendance-${uniqueId}-${status}`} className="sr-only">{status}</label>
                     </td>
                   ))}
-
                   <td className="py-2">{attendance[uniqueId]?.time || "-"}</td>
                 </tr>
               );
             })}
           </tbody>
-      </table>
+        </table>
+      </div>
 
-      {/* Tombol Action */}
-    <div className="mt-4 flex space-x-2">
+      {/* Tombol Simpan/Edit */}
+      <div className="mt-4 flex space-x-2 max-sm:justify-center max-sm:text-sm">
         {(isEditing || !hasAttendanceData) ? (
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-md"
-            onClick={handleSave}
-          >
-            Save
-          </button>
+          <button className="px-4 py-2 bg-blue-500 text-white rounded-md max-sm:px-3 max-sm:py-1" onClick={handleSave}>Save</button>
         ) : (
-          <button
-            className="px-4 py-2 bg-green-500 text-white rounded-md"
-            onClick={handleEdit}
-          >
-            Edit
-          </button>
+          <button className="px-4 py-2 bg-green-500 text-white rounded-md max-sm:px-3 max-sm:py-1" onClick={handleEdit}>Edit</button>
         )}
       </div>
 

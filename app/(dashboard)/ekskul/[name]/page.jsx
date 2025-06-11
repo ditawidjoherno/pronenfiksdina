@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -13,20 +13,21 @@ import InformasiEkskul from './_components/Informasieks';
 import AchievementBox from './_components/Kejuaraan';
 import KegiatanEksCard from './_components/EkskulKegiatan';
 import KehadiranEkskul from './_components/FormKehadiran';
+import RekapanChart from './_components/FormDetailAbsensi'; // ✅ Tambahkan import ini
 
 export default function EkskulDetail() {
   const router = useRouter();
-  const { name } = useParams(); // dari URL
+  const { name } = useParams();
   const [ekskulId, setEkskulId] = useState(null);
   const [ekskulName, setEkskulName] = useState('');
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchEkskul = async () => {
       try {
         const res = await fetch(`http://localhost:8000/api/ekskul/by-name/${name}`);
         const data = await res.json();
-        setEkskulId(data.id);        // simpan ID
-        setEkskulName(data.name);    // simpan nama ekskul asli dari database
+        setEkskulId(data.id);
+        setEkskulName(data.name);
       } catch (err) {
         console.error("❌ Gagal ambil ekskul:", err);
       }
@@ -35,35 +36,29 @@ export default function EkskulDetail() {
     if (name) fetchEkskul();
   }, [name]);
 
-
   return (
     <div className="flex flex-col h-screen">
-      {/* Header */}
       <Header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md" />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
         <Sidebar />
 
-        {/* Konten Utama */}
         <main className="flex-1 p-4 bg-gray-200 overflow-y-auto">
-          <div className="flex items-center justify-between w-full max-w-6xl mt-14 -mb-4">
-            <h1 className="text-3xl text-black font-bold">Ekstra Kulikuler</h1>
-
-            {/* Tombol Back di Sebelah Kanan */}
+          <div className="flex items-center justify-between w-full max-w-6xl sm:mt-14 mt-10 sm:-mb-4 -mb-8">
+            <h1 className="sm:text-3xl text-2xl text-black font-bold">Ekstra Kulikuler</h1>
             <FaArrowLeft
-              className="text-3xl text-gray-700 hover:text-gray-900 mr-auto ml-2 transition duration-300"
+              className="sm:text-3xl text-2xl text-gray-700 hover:text-gray-900 mr-auto ml-2 transition duration-300"
               onClick={() => router.back()}
             />
           </div>
 
-          <div className="p-6 mt-2 max-w-7xl rounded-2xl min-h-[400px] flex flex-col items-center">
+          <div className="sm:p-6 p-0 sm:mt-2 -mt-20 sm:max-w-7xl max-w-80 rounded-2xl min-h-[400px] flex items-center">
             <div className="relative w-full flex flex-col items-center">
               <ImageBox />
             </div>
           </div>
 
-<div className="mb-2">
+          <div className="sm:mb-2 mb-0 sm:mt-0 -mt-20 ">
             <KegiatanEksCard />
           </div>
 
@@ -71,7 +66,6 @@ export default function EkskulDetail() {
             <EkskulCard />
           </div>
 
-          {/* Anggota dan Pengumuman Ekskul dalam satu baris */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex-1">
               <AnggotaEkskul />
@@ -81,7 +75,6 @@ export default function EkskulDetail() {
             </div>
           </div>
 
-          {/* Statistik dan Prestasi dalam satu baris */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex-1">
               <EkskulChart />
@@ -90,9 +83,16 @@ export default function EkskulDetail() {
               {ekskulId && <AchievementBox ekskulId={ekskulId} />}
             </div>
           </div>
- <div className="relative w-full flex flex-col items-center mt-4">
-  <KehadiranEkskul ekskulId={ekskulId} ekskulName={ekskulName} />
-</div>
+
+          <div className="relative w-full flex flex-col items-center mt-4">
+            <KehadiranEkskul ekskulId={ekskulId} ekskulName={ekskulName} />
+          </div>
+
+          {/* ✅ Tambahkan RekapanChart di bagian paling bawah */}
+          <div className="relative w-full flex flex-col items-center mt-6">
+            {ekskulId && <RekapanChart ekskulId={ekskulId} />}
+          </div>
+
         </main>
       </div>
     </div>

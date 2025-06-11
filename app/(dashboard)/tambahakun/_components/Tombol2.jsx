@@ -9,7 +9,7 @@ const AccountTabs = ({ onTabChange }) => {
   };
 
   return (
-    <div className="flex border-b border-gray-300 w-full max-w-md mt-10">
+    <div className="flex border-b border-gray-300 w-full max-w-md sm:mt-10 mt-1">
       <button
         className={`flex-1 text-center py-2 font-medium ${
           activeTab === "user"

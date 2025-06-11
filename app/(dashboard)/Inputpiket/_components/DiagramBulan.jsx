@@ -22,15 +22,12 @@ const DiagramBulan = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const bulan = selectedDate.getMonth() + 1; // Januari = 0
+      const bulan = selectedDate.getMonth() + 1;
       const tahun = selectedDate.getFullYear();
 
       try {
         const response = await axios.get(`http://localhost:8000/api/kontribusi-piket`, {
-          params: {
-            bulan,
-            tahun
-          }
+          params: { bulan, tahun }
         });
 
         const rekapPerKelas = response.data.data.find(item => item.kelas === kelas);
@@ -38,7 +35,6 @@ const DiagramBulan = () => {
         if (rekapPerKelas) {
           const berkontribusi = Number(rekapPerKelas.jumlah_berkontribusi);
           const tidakBerkontribusi = Number(rekapPerKelas.jumlah_tidak_berkontribusi);
-
           const total = berkontribusi + tidakBerkontribusi;
           const totalValue = total > 0 ? total : 1;
 
@@ -46,18 +42,8 @@ const DiagramBulan = () => {
           const persenTidakBerkontribusi = (tidakBerkontribusi / totalValue) * 100;
 
           setData([
-            {
-              name: 'Berkontribusi',
-              jumlah: persenBerkontribusi,
-              color: "#640D5F",
-              hoverColor: "#4AA62D"
-            },
-            {
-              name: 'Tidak Berkontribusi',
-              jumlah: persenTidakBerkontribusi,
-              color: "#D91656",
-              hoverColor: "#D93636"
-            }
+            { name: 'Berkontribusi', jumlah: persenBerkontribusi, color: "#640D5F", hoverColor: "#4AA62D" },
+            { name: 'Tidak Berkontribusi', jumlah: persenTidakBerkontribusi, color: "#D91656", hoverColor: "#D93636" }
           ]);
         } else {
           setData([
@@ -65,7 +51,6 @@ const DiagramBulan = () => {
             { name: 'Tidak Berkontribusi', jumlah: 0, color: "#D91656", hoverColor: "#D93636" }
           ]);
         }
-
       } catch (error) {
         console.error('Gagal mengambil data:', error);
       }
@@ -75,56 +60,71 @@ const DiagramBulan = () => {
   }, [selectedDate, kelas]);
 
   return (
-    <div className="p-4 mt-5">
-      <h2 className="text-xl font-bold text-center mb-4 mt-5">Capaian Kontribusi</h2>
+    <div className="p-4 sm:mt-2 mt-2">
+      <h2 className="text-xl font-bold text-center sm:mb-4 mb-2 sm:mt-3 mt-2">Capaian Kontribusi</h2>
 
-      <div className="flex items-center space-x-4 mb-4 ml-5">
-        <p className="font-semibold">Pilih Bulan & Tahun:</p>
+      {/* Date Picker Area */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-y-2 gap-x-4 mb-2 sm:ml-5">
+        <p className="font-semibold text-sm sm:text-base">Pilih Bulan & Tahun:</p>
         <DatePicker
           selected={selectedDate}
           onChange={(date) => setSelectedDate(date)}
           dateFormat="MMMM yyyy"
           showMonthYearPicker
-          className="border px-3 py-2 rounded-lg shadow-sm"
+          className="border px-3 py-2 rounded-lg shadow-sm w-full sm:w-auto text-sm sm:text-base"
         />
       </div>
 
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart layout="vertical" data={data} margin={{ left: 20, right: 40 }} barGap={8}>
-          <XAxis
-            type="number"
-            domain={[0, 100]}
-            tickFormatter={(tick) => `${tick.toFixed(0)}%`}
-          />
-          <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} />
-          <Tooltip formatter={(value) => `${value.toFixed(1)}%`} cursor={{ fill: "rgba(0, 0, 0, 0.1)" }} />
-          <Bar dataKey="jumlah" barSize={45} radius={[0, 10, 10, 0]}>
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={hoverIndex === index ? entry.hoverColor : entry.color}
-                onMouseEnter={() => setHoverIndex(index)}
-                onMouseLeave={() => setHoverIndex(null)}
-              />
-            ))}
-            <LabelList
-              dataKey="jumlah"
-              position="right"
-              formatter={(value) => `${value.toFixed(1)}%`}
-              fill="#333"
-              fontSize={14}
-              fontWeight="bold"
-              offset={10}
+      {/* Chart */}
+      <div className="w-full overflow-x-auto">
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart layout="vertical" data={data} margin={{ left: 20, right: 40 }} barGap={8}>
+            <XAxis
+              type="number"
+              domain={[0, 100]}
+              tickFormatter={(tick) => `${tick.toFixed(0)}%`}
             />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <YAxis
+              dataKey="name"
+              type="category"
+              width={120}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip
+              formatter={(value) => `${value.toFixed(1)}%`}
+              cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}
+            />
+            <Bar dataKey="jumlah" barSize={45} radius={[0, 10, 10, 0]}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={hoverIndex === index ? entry.hoverColor : entry.color}
+                  onMouseEnter={() => setHoverIndex(index)}
+                  onMouseLeave={() => setHoverIndex(null)}
+                />
+              ))}
+              <LabelList
+                dataKey="jumlah"
+                position="right"
+                formatter={(value) => `${value.toFixed(1)}%`}
+                fill="#333"
+                fontSize={13}
+                fontWeight="bold"
+                offset={10}
+              />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
-      <div className="flex justify-center gap-6 mt-4">
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-2">
-            <div className="w-5 h-5" style={{ backgroundColor: item.color }}></div>
-            <span className="text-sm font-medium">{item.name}</span>
+            <div className="w-5 h-5 rounded" style={{ backgroundColor: item.color }}></div>
+            <span className="font-medium">{item.name}</span>
           </div>
         ))}
       </div>

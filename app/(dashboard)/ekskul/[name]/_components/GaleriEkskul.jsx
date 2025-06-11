@@ -11,7 +11,7 @@ function formatDateTime(dateTimeStr) {
   if (isNaN(date.getTime())) return "Tanggal tidak valid";
 
   return date.toLocaleString("id-ID", {
-    timeZone: "Asia/Makassar", // 👈 penting
+    timeZone: "Asia/Makassar",
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -21,7 +21,6 @@ function formatDateTime(dateTimeStr) {
   });
 }
 
-
 export default function UploadPhotoModal({ onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -30,6 +29,7 @@ export default function UploadPhotoModal({ onClose }) {
   const [gallery, setGallery] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+  const [showAlert, setShowAlert] = useState(false); // ⬅️ Alert ketika deskripsi kosong
 
   useEffect(() => {
     const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
@@ -53,7 +53,12 @@ export default function UploadPhotoModal({ onClose }) {
 
   const handleSave = async () => {
     const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
-    if (!selectedImageFile || !description || !ekskulId) return;
+    if (!selectedImageFile || !ekskulId) return;
+
+    if (!description.trim()) {
+      setShowAlert(true); // ⬅️ Tampilkan alert jika kosong
+      return;
+    }
 
     const formData = new FormData();
     formData.append("image", selectedImageFile);
@@ -133,7 +138,9 @@ export default function UploadPhotoModal({ onClose }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-sm text-gray-500 mt-2">📅 {formatDateTime(uploadDate)}</p>
+              <p className="text-sm text-gray-500 mt-2">
+                📅 {formatDateTime(uploadDate)}
+              </p>
             </div>
             <textarea
               className="w-full mt-2 p-2 border rounded-lg shadow-sm"
@@ -153,7 +160,10 @@ export default function UploadPhotoModal({ onClose }) {
         <div className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {gallery.map((item, index) => (
-              <div key={index} className="border rounded-lg p-2 shadow-sm flex flex-col items-center">
+              <div
+                key={index}
+                className="border rounded-lg p-2 shadow-sm flex flex-col items-center"
+              >
                 <div className="relative w-full">
                   <img
                     src={item.imageUrl}
@@ -179,6 +189,7 @@ export default function UploadPhotoModal({ onClose }) {
           </div>
         </div>
 
+        {/* Konfirmasi hapus */}
         {showConfirm && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[99999]">
             <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
@@ -198,6 +209,25 @@ export default function UploadPhotoModal({ onClose }) {
                   className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
                 >
                   Tidak
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Alert deskripsi wajib */}
+        {showAlert && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[99999]">
+            <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
+              <p className="mb-4 font-semibold text-red-600">
+                Keterangan tidak boleh kosong!
+              </p>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setShowAlert(false)}
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                >
+                  Oke
                 </button>
               </div>
             </div>

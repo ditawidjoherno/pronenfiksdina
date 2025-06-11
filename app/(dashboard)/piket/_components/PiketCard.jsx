@@ -19,7 +19,7 @@ export default function PiketCard() {
         return res.json();
       })
       .then((json) => {
-        console.log("RESPON PIKET:", json); // ✅ Debug hasil
+        console.log("RESPON PIKET:", json);
         setData(json);
         setLoading(false);
       })
@@ -34,22 +34,22 @@ export default function PiketCard() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="bg-[#869ddd] p-6 rounded-2xl shadow-lg w-full max-w-7xl h-[220px] mt-5 flex justify-between items-start">
-      <div className="flex-1 flex flex-col justify-center">
-        <div className="flex items-center gap-3">
+    <div className="bg-[#869ddd] p-6 rounded-2xl shadow-lg w-full max-w-7xl h-[220px] max-sm:h-auto max-sm:flex-col flex justify-between items-start max-sm:items-center max-sm:text-center mt-5">
+      <div className="flex-1 flex flex-col justify-center max-sm:items-center">
+        <div className="flex items-center gap-3 max-sm:flex-col max-sm:gap-1">
           <FaBullhorn className="text-white text-2xl" />
-          <h2 className="text-white font-semibold text-2xl">Petugas Piket Harian Siswa</h2>
+          <h2 className="text-white font-semibold text-2xl max-sm:text-lg">Petugas Piket Harian Siswa</h2>
         </div>
-        <p className="text-white font-medium text-xl mt-1">
+        <p className="text-white font-medium text-xl mt-1 max-sm:text-base">
           {data?.tanggal ? dayjs(data.tanggal).format("dddd, D MMMM YYYY") : "Tanggal tidak tersedia"}
         </p>
-        <div className="flex justify-center items-center ml-28 mt-2">
-          <p className="text-6xl font-bold text-blue-950">
+        <div className="flex justify-center items-center ml-28 mt-2 max-sm:ml-0">
+          <p className="text-6xl font-bold text-blue-950 max-sm:text-4xl">
             {data?.kelas || "-"}
           </p>
         </div>
       </div>
-      <div className="w-24 h-24 mr-8 overflow-hidden flex-shrink-0 mt-10">
+      <div className="w-24 h-24 mr-8 overflow-hidden flex-shrink-0 mt-10 max-sm:mt-4 max-sm:mr-0 max-sm:w-20 max-sm:h-20">
         <img src="/images/piketcard.png" alt="logo piket" className="w-full h-full object-cover" />
       </div>
     </div>

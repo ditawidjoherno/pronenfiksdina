@@ -11,22 +11,28 @@ export default function TotalPopup({ onClose }) {
 
   // Mengambil data user dan total dari backend
   useEffect(() => {
-    const fetchUsersWithTotal = async () => {
-      try {
-        const res = await fetch('http://localhost:8000/api/total-user');
-        if (!res.ok) {
-          throw new Error('Gagal mengambil data');
-        }
-        const data = await res.json();
-        setStudents(data.data);  // Menyimpan data user
-        setTotal(data.total_users);  // Menyimpan total user
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  const fetchUsersWithTotal = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/total-user');
+      if (!res.ok) throw new Error('Gagal mengambil data');
+      const data = await res.json();
 
-    fetchUsersWithTotal();
-  }, []);  // Hanya dipanggil sekali saat komponen dimuat
+      // ✅ Hanya siswa dan guru, bukan orang tua (OT_...)
+      const filteredUsers = data.data.filter(user =>
+        (user.nisn && !user.nisn.startsWith("OT_")) ||
+        (user.nip && !user.nip.startsWith("OT_"))
+      );
+
+      setStudents(filteredUsers);
+      setTotal(filteredUsers.length);
+    } catch (error) {
+      console.error('❌ Gagal mengambil data:', error);
+    }
+  };
+
+  fetchUsersWithTotal();
+}, []);
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-40" onClick={onClose}>

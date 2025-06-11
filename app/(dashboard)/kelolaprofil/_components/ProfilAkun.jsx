@@ -58,30 +58,39 @@ export default function ProfileCard() {
             <p className="font-bold sm:text-lg text-base">Jabatan</p>
             <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.role}</p>
           </div>
-          <div>
-            <p className="font-bold sm:text-lg text-base">{profile?.role === "guru" ? "NIP" : "NISN"}</p>
-            <p className="text-gray-700 font-medium sm:text-lg text-base">
-              {profile?.role === "guru" ? profile?.nip : profile?.nisn}
-            </p>
-          </div>
+          {profile?.role !== "admin" && (
+  <div>
+    <p className="font-bold sm:text-lg text-base">
+      {profile?.role === "guru" ? "NIP" : "NISN"}
+    </p>
+    <p className="text-gray-700 font-medium sm:text-lg text-base">
+      {profile?.role === "guru" ? profile?.nip : profile?.nisn}
+    </p>
+  </div>
+)}
           <div>
             <p className="font-bold sm:text-lg text-base">Status</p>
             <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.kelas ?? "Non-Kelas"}</p>
           </div>
-          <div>
-            <p className="font-semibold sm:text-lg text-base">Jenis Kelamin</p>
-            <p className="text-gray-700 font-medium sm:text-lg text-base">
-              {profile?.jenis_kelamin === "L"
-                ? "Laki-laki"
-                : profile?.jenis_kelamin === "P"
-                ? "Perempuan"
-                : "-"}
-            </p>
-          </div>
-          <div>
-            <p className="font-semibold sm:text-lg text-base">Agama</p>
-            <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.agama}</p>
-          </div>
+          {profile?.role !== 'admin' && (
+  <div>
+    <p className="font-semibold sm:text-lg text-base">Jenis Kelamin</p>
+    <p className="text-gray-700 font-medium sm:text-lg text-base">
+      {profile?.jenis_kelamin === "L"
+        ? "Laki-laki"
+        : profile?.jenis_kelamin === "P"
+        ? "Perempuan"
+        : "-"}
+    </p>
+  </div>
+)}
+
+          {profile?.role !== 'admin' && (
+  <div>
+    <p className="font-semibold sm:text-lg text-base">Agama</p>
+    <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.agama}</p>
+  </div>
+)}
           <div>
             <p className="font-semibold sm:text-lg text-base">No HP</p>
             <p className="text-gray-700 font-medium sm:text-lg text-base">{profile?.nomor_hp || "-"}</p>

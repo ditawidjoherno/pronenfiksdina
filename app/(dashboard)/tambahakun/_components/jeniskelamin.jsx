@@ -3,7 +3,7 @@ import React from "react";
 
 const GenderChart = ({ malePercentage, femalePercentage }) => {
   return (
-    <div className="w-full max-w-lg space-y-4 mt-10">
+    <div className="w-full max-w-lg space-y-4 sm:mt-10 mt-5">
       {/* Female Bar */}
       <div className="relative flex items-center">
         <div className="flex-1 bg-pink-300 rounded-full h-10 flex items-center px-4 relative">
@@ -12,7 +12,7 @@ const GenderChart = ({ malePercentage, femalePercentage }) => {
             style={{ width: `${femalePercentage}%` }}
           ></div>
           <span className="text-white font-semibold relative">Perempuan</span>
-          <span className="absolute right-4 text-white font-bold text-lg">
+          <span className="absolute right-4 text-white font-bold sm:text-lg text-md">
             {femalePercentage}%
           </span>
         </div>
@@ -26,7 +26,7 @@ const GenderChart = ({ malePercentage, femalePercentage }) => {
             style={{ width: `${malePercentage}%` }}
           ></div>
           <span className="text-white font-semibold relative ">Laki-laki</span>
-          <span className="absolute right-4 text-white font-bold text-lg">
+          <span className="absolute right-4 text-white font-bold sm:text-lg text-md">
             {malePercentage}%
           </span>
         </div>

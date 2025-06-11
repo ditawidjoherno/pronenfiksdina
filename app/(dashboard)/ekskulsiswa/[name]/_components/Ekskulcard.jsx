@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { AiFillPicture } from "react-icons/ai";
+import { MdEdit } from "react-icons/md";
 import { FaUserTie } from "react-icons/fa";
 import UploadPhotoModal from "./GaleriEkskul";
 
 export default function ImageBox() {
-  const [imageSrc, setImageSrc] = useState("/images/osis.png");
+  const [imageSrc, setImageSrc] = useState("/images/default.png");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ekskulName, setEkskulName] = useState("Ekskul");
   const [mentor, setMentor] = useState("Mentor");
+  const [ekskulId, setEkskulId] = useState(null);
 
   const buildImageURL = (rawImage) => {
     if (!rawImage) return "/images/default-image.jpg";
@@ -27,6 +29,7 @@ export default function ImageBox() {
         setImageSrc(buildImageURL(parsed.image));
         setEkskulName(parsed.name || "Ekskul");
         setMentor(parsed.mentor || "Tidak Diketahui");
+        setEkskulId(parsed.id || null);
       } catch (e) {
         console.error("❌ Gagal parsing selectedEkskul:", e.message);
       }
@@ -43,6 +46,7 @@ export default function ImageBox() {
             setImageSrc(buildImageURL(parsed.image));
             setEkskulName(parsed.name || "Ekskul");
             setMentor(parsed.mentor || "Tidak Diketahui");
+            setEkskulId(parsed.id || null);
           } catch (e) {
             console.error("❌ Gagal parsing selectedEkskul:", e.message);
           }
@@ -56,32 +60,38 @@ export default function ImageBox() {
   }, []);
 
   return (
-    <div className="w-full flex justify-center items-center p-4 relative">
-      <div className="w-full max-w-screen-xl overflow-hidden relative">
-        <Image
-          src={imageSrc}
-          alt="Group Photo"
-          width={1920}
-          height={500}
-          sizes="100vw"
-          style={{ width: "100%", height: "auto" }}
-          className="rounded-2xl"
-          priority
-        />
+    <div className="w-full flex justify-center items-center sm:p-4 p-2 relative">
+      <div className="w-full max-w-7xl relative">
+        <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-2xl overflow-hidden">
+          <Image
+            src={imageSrc}
+            alt="Group Photo"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+        </div>
 
+        {/* Overlay transparan */}
         <div className="absolute inset-0 bg-indigo-500/50 rounded-2xl"></div>
 
-        <div className="absolute inset-0 flex flex-col justify-center items-center z-10">
-          <h2 className="text-3xl text-[#121e42] font-extrabold -mt-10">{ekskulName}</h2>
-          <div className="flex items-center gap-2 text-white mt-2">
-            <FaUserTie size={24} />
-            <span className="text-lg font-medium">{mentor}</span>
+        {/* Konten Overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4 text-center gap-2 sm:gap-4">
+          <h2 className="text-xl sm:text-3xl text-white font-extrabold drop-shadow">
+            {ekskulName}
+          </h2>
+
+          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white text-sm sm:text-base">
+            <FaUserTie size={18} />
+            <span className="font-medium">{mentor}</span>
           </div>
+
           <button
-            className="mt-4 flex items-center gap-2 bg-[#121e42] text-white py-2 px-6 rounded-lg shadow-lg hover:bg-yellow-500 transition duration-300"
+            className="mt-2 sm:mt-4 flex items-center gap-2 bg-[#121e42] text-white text-sm sm:text-base py-1.5 px-4 sm:px-6 rounded-md sm:rounded-lg shadow-md hover:bg-yellow-500 transition duration-300"
             onClick={() => setIsModalOpen(true)}
           >
-            <AiFillPicture size={24} />
+            <AiFillPicture size={18} />
             Lihat Galeri Ekskul
           </button>
         </div>

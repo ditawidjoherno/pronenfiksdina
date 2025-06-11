@@ -20,4 +20,8 @@ body {
   background: var(--background);
   font-family: Poppins, Helvetica, sans-serif;
 }
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
 

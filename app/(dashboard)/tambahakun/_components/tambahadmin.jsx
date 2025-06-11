@@ -1,19 +1,24 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect } from "react";
-import { FaDownload, FaUserPlus } from "react-icons/fa";
+import { FaDownload, FaUserPlus, FaTrash } from "react-icons/fa";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import TambahAkunForm from "./InputManualAdm";
 import { IoMdCloseCircle } from "react-icons/io";
+import ProfileDetailGuru from "./DetailProfilGuru";
 
 const AdminTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [file, setFile] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showAddAccountPopup, setShowAddAccountPopup] = useState(false);
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState();
+  const [selectedGuru, setSelectedGuru] = useState(null);
   const [guru, setGuru] = useState([]);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [guruToDelete, setGuruToDelete] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const formatName = (fullName) => {
     const nameParts = fullName.split(" ");
@@ -21,22 +26,23 @@ const AdminTable = () => {
     return `${nameParts[0]} ${nameParts[1][0]}. ${nameParts[2][0]}. ${nameParts[nameParts.length - 1]}`;
   };
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/guru') // Ganti dengan URL API Laravel sesuai server kamu
+  const fetchGuruData = () => {
+    fetch("http://localhost:8000/api/guru")
       .then((res) => {
-        if (!res.ok) throw new Error('Gagal mengambil data siswa');
+        if (!res.ok) throw new Error("Gagal mengambil data guru");
         return res.json();
       })
       .then((data) => {
         setGuru(data.data || []);
-        setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
-        setLoading(false);
+        console.error(err.message);
       });
-  }, []);
+  };
 
+  useEffect(() => {
+    fetchGuruData();
+  }, []);
 
   const filteredUsers = guru.filter((guru) =>
     guru.nama.toLowerCase().includes(searchTerm.toLowerCase())
@@ -62,11 +68,59 @@ const AdminTable = () => {
 
   const handleCloseAddAccountPopup = () => {
     setShowAddAccountPopup(false);
+    fetchGuruData();
+  };
+
+  const handleDeleteClick = (guru) => {
+    setGuruToDelete(guru);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmYes = async () => {
+    if (!guruToDelete) return;
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:8000/api/users/${guruToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        setGuru((prev) => prev.filter((g) => g.id !== guruToDelete.id));
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+      }
+    } catch (err) {
+      console.error("Gagal hapus:", err);
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+    }
+    setShowConfirm(false);
+    setGuruToDelete(null);
   };
 
   return (
     <div className="p-4 mt-10 bg-white rounded-xl shadow-md w-full">
-      {/* Search dan Upload */}
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-green-700 px-6 py-3 rounded-lg shadow-lg border border-green-500">
+            ✅ Akun guru berhasil dihapus
+          </div>
+        </div>
+      )}
+
+      {showError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-red-700 px-6 py-3 rounded-lg shadow-lg border border-red-500">
+            ❌ Gagal menghapus akun
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <TextField
           label="Search"
@@ -83,13 +137,6 @@ const AdminTable = () => {
             style={{ display: "none" }}
             onChange={handleFileUpload}
           />
-          <Button
-            variant="text"
-            color="primary"
-            onClick={() => document.getElementById("fileUpload").click()}
-          >
-            Upload Data Guru
-          </Button>
           <Button
             variant="contained"
             color="primary"
@@ -108,12 +155,11 @@ const AdminTable = () => {
         </div>
       </div>
 
-      {/* Tabel Data */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-gray-300 p-2">NISN</th>
+              <th className="border border-gray-300 p-2">NIP</th>
               <th className="border border-gray-300 p-2">Nama</th>
               <th className="border border-gray-300 p-2">Kelas</th>
               <th className="border border-gray-300 p-2">Tanggal Lahir</th>
@@ -122,43 +168,45 @@ const AdminTable = () => {
               <th className="border border-gray-300 p-2">Phone</th>
               <th className="border border-gray-300 p-2">Email</th>
               <th className="border border-gray-300 p-2">Password</th>
+              <th className="border border-gray-300 p-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((guru, index) => (
               <tr key={index} className="text-center">
-                <td className="border border-gray-300 p-2">{guru.nip}</td>
+                <td className="border border-gray-300 p-2">{guru.nip || "-"}</td>
                 <td className="border border-gray-300 p-2">
                   <a
                     href="#"
                     className="text-blue-500 underline"
-                    onClick={() => alert(`NISN: ${guru.id}`)}
+                    onClick={() => setSelectedGuru(guru)}
                   >
                     {formatName(guru.nama) || "-"}
                   </a>
                 </td>
                 <td className="border border-gray-300 p-2">{guru.kelas || "-"}</td>
-                <td className="border border-gray-300 p-2">
-                  {guru.tanggal_lahir
-                    ? new Date(guru.tanggal_lahir).toLocaleDateString("id-ID", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })
-                    : "-"}
-                </td>
+                <td className="border border-gray-300 p-2">{
+                  guru.tanggal_lahir ? new Date(guru.tanggal_lahir).toLocaleDateString("id-ID") : "-"
+                }</td>
                 <td className="border border-gray-300 p-2">{guru.jenis_kelamin || "-"}</td>
                 <td className="border border-gray-300 p-2">{guru.agama || "-"}</td>
                 <td className="border border-gray-300 p-2">{guru.nomor_hp || "-"}</td>
                 <td className="border border-gray-300 p-2">{guru.email || "-"}</td>
-                <td className="border border-gray-300 p-2">{guru.password || "-"}</td>
+                <td className="border border-gray-300 p-2">********</td>
+                <td className="border border-gray-300 p-2">
+                  <button
+                    onClick={() => handleDeleteClick(guru)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* ✅ Popup Tambah Akun */}
       {showAddAccountPopup && (
         <div className="fixed mt-10 inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-2xl shadow-lg max-w-4xl relative">
@@ -169,6 +217,34 @@ const AdminTable = () => {
               <IoMdCloseCircle className="h-8 w-8 text-red-800" />
             </button>
             <TambahAkunForm onClose={handleCloseAddAccountPopup} />
+          </div>
+        </div>
+      )}
+
+      {selectedGuru && (
+        <ProfileDetailGuru user={selectedGuru} onClose={() => setSelectedGuru(null)} />
+      )}
+
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
+            <p className="mb-4 font-semibold text-gray-800">
+              Anda yakin ingin menghapus akun ini?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleConfirmYes}
+                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+              >
+                Ya
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+              >
+                Tidak
+              </button>
+            </div>
           </div>
         </div>
       )}

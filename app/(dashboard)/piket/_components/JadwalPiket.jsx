@@ -25,9 +25,9 @@ export default function JadwalPiketPopup({ onClose, onSimpan }) {
       const data = await res.json();
 
       if (res.ok) {
-  alert(data.message);
-  if (onSimpan) onSimpan(); // ✅ trigger refresh
-  onClose();
+        alert(data.message);
+        if (onSimpan) onSimpan(); // ✅ trigger refresh
+        onClose();
       } else {
         alert(data.message || "Gagal menyimpan jadwal piket");
       }
@@ -38,16 +38,17 @@ export default function JadwalPiketPopup({ onClose, onSimpan }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-80 relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 px-4">
+      <div className="bg-white p-6 rounded-xl shadow-lg w-80 max-sm:w-[90%] max-sm:max-h-[90vh] max-sm:overflow-y-auto relative">
         <button
           className="absolute top-2 right-2 text-red-500"
           onClick={onClose}
         >
           <AiOutlineClose size={24} />
         </button>
-        <h2 className="text-lg font-bold text-center mb-4">Atur Jadwal Piket</h2>
-        <div>
+        <h2 className="text-lg font-bold text-center mb-4 max-sm:text-base">Atur Jadwal Piket</h2>
+
+        <div className="max-sm:text-sm">
           <label className="block font-semibold">Hari/Tanggal</label>
           <input
             type="date"
@@ -56,7 +57,8 @@ export default function JadwalPiketPopup({ onClose, onSimpan }) {
             className="w-full p-2 mt-1 border rounded bg-gray-200"
           />
         </div>
-        <div className="mt-4">
+
+        <div className="mt-4 max-sm:text-sm">
           <label className="block font-semibold">Kelas</label>
           <select
             value={kelas}
@@ -71,7 +73,7 @@ export default function JadwalPiketPopup({ onClose, onSimpan }) {
         </div>
 
         <button
-          className="mt-4 w-full bg-green-600 text-white p-2 rounded"
+          className="mt-4 w-full bg-green-600 text-white p-2 rounded max-sm:text-sm"
           onClick={handleSubmit}
         >
           Selesai

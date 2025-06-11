@@ -9,40 +9,39 @@ export default function FormInformasi() {
   const [description, setDescription] = useState('');
 
   const handleSubmit = async () => {
-  const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
-  if (!ekskulId) return;
+    const ekskulId = JSON.parse(localStorage.getItem("selectedEkskul"))?.id;
+    if (!ekskulId) return;
 
-  const payload = {
-    date,
-    description,
-    author: "Admin",
-    time: "17:00",
-    color: "bg-blue-600"
+    const payload = {
+      date,
+      description,
+      author: "Admin",
+      time: "17:00",
+      color: "bg-blue-600"
+    };
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/informasi`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log("✅ Berhasil tambah:", data);
+      window.location.reload();
+
+    } catch (err) {
+      console.error("❌ Gagal menambah informasi:", err);
+    }
   };
 
-  try {
-    const res = await fetch(`http://localhost:8000/api/ekskul/${ekskulId}/informasi`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    console.log("✅ Berhasil tambah:", data);
-    window.location.reload(); // atau panggil callback jika kamu mau tanpa reload
-
-  } catch (err) {
-    console.error("❌ Gagal menambah informasi:", err);
-  }
-};
-
-
   return (
-    <div className="p-6 w-96 rounded-lg ">
-      <h2 className="text-lg font-bold">Tambah Informasi</h2>
+    <div className="sm:ml-0 ml-5 p-6 w-96 max-sm:w-[90%] max-sm:px-4 rounded-lg bg-white shadow-md sm:mt-0 mt-6">
+      <h2 className="sm:text-lg text-base font-bold text-black">Tambah Informasi</h2>
 
       <div className="mt-4">
-        <label className="block font-medium">Hari / Tanggal</label>
+        <label className="block font-medium text-black">Hari / Tanggal</label>
         <div className="relative">
           <input
             type="date"
@@ -53,9 +52,9 @@ export default function FormInformasi() {
           />
         </div>
       </div>
-      
+
       <div className="mt-4">
-        <label className="block font-medium">Deskripsi</label>
+        <label className="block font-medium text-black">Deskripsi</label>
         <div className="relative">
           <textarea
             value={description}
@@ -67,15 +66,17 @@ export default function FormInformasi() {
         </div>
       </div>
 
-      <p className="mt-2 text-sm text-red-500">
+      <p className="mt-2 sm:text-sm text-xs text-red-500">
         *Isi deskripsi dapat disesuaikan dengan informasi yang diberikan. Anda dapat memperbarui atau mengeditnya sesuai kebutuhan jika terjadi kekeliruan.
       </p>
 
-      <button onClick={handleSubmit} className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg flex justify-center items-center">
-  <AiOutlineUpload className='h-6 w-6 mr-2' />
-  Unggah
-</button>
-
+      <button
+        onClick={handleSubmit}
+        className="mt-4 w-full  bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex justify-center items-center"
+      >
+        <AiOutlineUpload className="h-6 w-6 mr-2 " />
+        Unggah
+      </button>
     </div>
   );
 }

@@ -46,7 +46,7 @@ export default function Beranda() {
       <Sidebar />
 
       <main className="flex-1 bg-gray-200 p-4 flex flex-col items-center justify-start w-full overflow-y-auto">
-        <h1 className="text-3xl text-black font-bold w-full max-w-6xl mb-4 mt-14 mr-auto">Tambah Akun</h1>
+        <h1 className="sm:text-3xl text-2xl text-black font-bold w-full max-w-6xl sm:mb-4 mb-1 sm:mt-14 mt-10 mr-auto">Tambah Akun</h1>
 
         <AccountTabs onTabChange={setActiveTab} />
 

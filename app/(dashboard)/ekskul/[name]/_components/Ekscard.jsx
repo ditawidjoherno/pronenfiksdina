@@ -74,7 +74,7 @@ const EkskulCard = () => {
 
   return (
     <div className="border-[#94a6d8] border-4 bg-white text-black p-4 rounded-xl max-w-7xl mx-auto">
-      <h1 className="flex justify-start text-[#121e42] text-2xl font-bold mb-3">Deskripsi</h1>
+      <h1 className="flex justify-start text-[#121e42] sm:text-2xl text-xl font-bold sm:mb-3 mb-1">Deskripsi</h1>
 
       {isEditing ? (
         <textarea

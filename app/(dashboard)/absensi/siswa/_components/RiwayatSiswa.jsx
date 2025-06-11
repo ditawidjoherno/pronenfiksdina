@@ -1,32 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const AttendanceTable = () => {
-  const [data] = useState([
-    {
-      date: 'Senin, 12 Maret 2025',
-      status: 'hadir',
-      waktu: '07.20 am',
-    },
-    {
-      date: 'Selasa, 13 Maret 2025',
-      status: 'tidak-hadir',
-      waktu: '07.20 am',
-    },
-    {
-      date: 'Rabu, 14 Maret 2025',
-      status: 'terlambat',
-      waktu: '07.30 am',
-    },
-  ]);
+const AttendanceTable = ({ selectedDate }) => {
+  const [data, setData] = useState([]);
+  const [monthYear, setMonthYear] = useState('-');
+  const [kelas, setKelas] = useState('-');
 
-  // Fungsi untuk menentukan warna berdasarkan status
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const fetchAbsensi = async () => {
+      const token = localStorage.getItem('token');
+
+      try {
+        const resUser = await fetch('http://localhost:8000/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+
+        const resultUser = await resUser.json();
+        const userId = resultUser.user.id;
+        setKelas(resultUser.user.kelas ?? '-');
+
+        const bulan = selectedDate.getMonth() + 1;
+        const tahun = selectedDate.getFullYear();
+
+        const resAbsensi = await fetch(
+          `http://localhost:8000/api/absensi-by-user?user_id=${userId}&bulan=${bulan}&tahun=${tahun}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          }
+        );
+
+        const resultAbsensi = await resAbsensi.json();
+        setData(resultAbsensi.absensi || []);
+
+        const bulanNama = selectedDate.toLocaleString('id-ID', { month: 'long' });
+        setMonthYear(`${bulanNama} ${tahun}`);
+      } catch (error) {
+        console.error('❌ Gagal mengambil data absensi:', error.message);
+      }
+    };
+
+    fetchAbsensi();
+  }, [selectedDate]);
+
   const getStatusColor = (status) => {
-    switch (status) {
+    const s = status.toLowerCase();
+    switch (s) {
       case 'hadir':
         return 'bg-green-500';
-      case 'tidak-hadir':
+      case 'tidak hadir':
         return 'bg-red-500';
       case 'terlambat':
         return 'bg-yellow-500';
@@ -37,9 +67,13 @@ const AttendanceTable = () => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full mt-5">
-      <h2 className="text-center font-semibold text-xl text-blue-900 mb-6">
-        Maret 2025
+      <h2 className="text-center font-semibold text-xl text-blue-900 mb-2">
+        {monthYear}
       </h2>
+      <p className="text-center text-gray-700 font-medium mb-4">
+        Kelas: {kelas}
+      </p>
+
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
@@ -62,55 +96,64 @@ const AttendanceTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
-              <tr
-                key={index}
-                className="hover:bg-gray-50 transition-colors duration-200"
-              >
-                <td className="p-4 border-b border-gray-200 text-gray-700 text-center">
-                  {item.date}
-                </td>
+            {data.map((item, index) => {
+              const status = item.status?.toLowerCase?.() ?? '';
+              const tanggalFormatted = item.tanggal
+                ? new Date(item.tanggal).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                : '-';
 
-                {/* Indikator untuk Hadir */}
-                <td className="p-4 border-b border-gray-200">
-                  <div
-                    className={`w-6 h-6 rounded-full mx-auto ${
-                      item.status === 'hadir'
-                        ? getStatusColor('hadir')
-                        : 'bg-gray-300'
-                    }`}
-                  ></div>
-                </td>
-
-                {/* Indikator untuk Tidak Hadir */}
-                <td className="p-4 border-b border-gray-200">
-                  <div
-                    className={`w-6 h-6 rounded-full mx-auto ${
-                      item.status === 'tidak-hadir'
-                        ? getStatusColor('tidak-hadir')
-                        : 'bg-gray-300'
-                    }`}
-                  ></div>
-                </td>
-
-                {/* Indikator untuk Terlambat */}
-                <td className="p-4 border-b border-gray-200">
-                  <div
-                    className={`w-6 h-6 rounded-full mx-auto ${
-                      item.status === 'terlambat'
-                        ? getStatusColor('terlambat')
-                        : 'bg-gray-300'
-                    }`}
-                  ></div>
-                </td>
-
-                <td className="p-4 border-b border-gray-200 text-gray-700 text-center">
-                  {item.waktu}
-                </td>
-              </tr>
-            ))}
+              return (
+                <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
+                  <td className="p-4 border-b border-gray-200 text-center text-gray-700 bg-white">
+                    {tanggalFormatted}
+                  </td>
+                  <td className="p-4 border-b border-gray-200">
+                    <div className={`w-6 h-6 rounded-full mx-auto ${getStatusColor(status === 'hadir' ? 'hadir' : '')}`} />
+                  </td>
+                  <td className="p-4 border-b border-gray-200">
+                    <div className={`w-6 h-6 rounded-full mx-auto ${getStatusColor(status === 'tidak hadir' ? 'tidak hadir' : '')}`} />
+                  </td>
+                  <td className="p-4 border-b border-gray-200">
+                    <div className={`w-6 h-6 rounded-full mx-auto ${getStatusColor(status === 'terlambat' ? 'terlambat' : '')}`} />
+                  </td>
+                  <td className="p-4 border-b border-gray-200 text-center text-gray-700 bg-white">
+                    {item.waktu_absen || '-'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+
+        {data.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">Belum ada data absensi</p>
+        )}
+         {/* Rekap Jumlah Status */}
+        <div className="flex flex-wrap justify-center mt-6 gap-4 ">
+          <div className="bg-green-500 text-white px-6 py-4 rounded-lg text-center w-60 shadow">
+            <p className="font-semibold">Jumlah Hadir</p>
+            <p className="text-xl">
+              {data.filter(item => item.status?.toLowerCase() === 'hadir').length}
+            </p>
+          </div>
+          <div className="bg-red-500 text-white px-6 py-4 rounded-lg text-center w-60 shadow">
+            <p className="font-semibold">Jumlah Tidak Hadir</p>
+            <p className="text-xl">
+              {data.filter(item => item.status?.toLowerCase() === 'tidak hadir').length}
+            </p>
+          </div>
+          <div className="bg-yellow-400 text-white px-6 py-4 rounded-lg text-center w-60 shadow">
+            <p className="font-semibold">Jumlah Terlambat</p>
+            <p className="text-xl">
+              {data.filter(item => item.status?.toLowerCase() === 'terlambat').length}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

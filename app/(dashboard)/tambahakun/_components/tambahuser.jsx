@@ -1,6 +1,7 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect } from "react";
-import { FaUserPlus, FaDownload } from "react-icons/fa";
+import { FaUserPlus, FaDownload, FaTrash } from "react-icons/fa";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import TambahAkunForm from "./InputManual";
@@ -13,34 +14,29 @@ const UserTable = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showAddAccountPopup, setShowAddAccountPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [students, setStudents] = useState([]);
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
-    fetch('http://localhost:8000/api/siswa') // Ganti dengan URL API Laravel sesuai server kamu
+    fetch('http://localhost:8000/api/siswa')
       .then((res) => {
         if (!res.ok) throw new Error('Gagal mengambil data siswa');
         return res.json();
       })
       .then((data) => {
         setStudents(data.data || []);
-        setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
-        setLoading(false);
+        console.error("Gagal fetch:", err);
       });
   }, []);
 
-  // const formatName = (fullName) => {
-  //   const nameParts = fullName.split(" ");
-  //   if (nameParts.length <= 3) return fullName;
-  //   return `${nameParts[0]} ${nameParts[1][0]}. ${nameParts[2][0]}. ${nameParts[nameParts.length - 1]}`;
-  // };
-
-  const filteredUsers = students.filter((students) =>
-    students.nama.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = students.filter((student) =>
+    student.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleFileUpload = (event) => {
@@ -73,19 +69,71 @@ const UserTable = () => {
     setSelectedUser(null);
   };
 
+  const handleDeleteClick = (user) => {
+    setUserToDelete(user);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmYes = async () => {
+    if (!userToDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:8000/api/users/${userToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        setStudents((prev) => prev.filter((s) => s.id !== userToDelete.id));
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+      }
+    } catch (error) {
+      console.error("Gagal hapus:", error);
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+    }
+
+    setShowConfirm(false);
+    setUserToDelete(null);
+  };
+
   return (
-    <div className="p-4 mt-10 bg-white rounded-xl shadow-md w-full">
-      {/* ✅ Header */}
-      <div className="flex justify-between items-center mb-4">
+    <div className="p-4 sm:mt-10 mt-8 bg-white rounded-xl shadow-md w-full">
+      {/* ✅ Alert Sukses */}
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-green-700 px-6 py-3 rounded-lg shadow-lg border border-green-500">
+            ✅ Akun berhasil dihapus
+          </div>
+        </div>
+      )}
+
+      {/* ❌ Alert Gagal */}
+      {showError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-red-700 px-6 py-3 rounded-lg shadow-lg border border-red-500">
+            ❌ Gagal menghapus akun
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
         <TextField
           label="Search"
           variant="outlined"
           size="small"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full sm:w-auto"
         />
         <div className="flex gap-2">
-          {/* ✅ Upload file */}
           <input
             type="file"
             id="fileUpload"
@@ -94,35 +142,23 @@ const UserTable = () => {
             onChange={handleFileUpload}
           />
           <Button
-            variant="text"
-            color="primary"
-            onClick={() => document.getElementById("fileUpload").click()}
-          >
-            Upload Data Siswa
-          </Button>
-
-          {/* ✅ Tombol Tambah Akun */}
-          <Button
             variant="contained"
             color="primary"
-            className="flex items-center gap-2 rounded-xl"
+            className="flex items-center gap-2 sm:rounded-xl rounded-full"
             onClick={() => setShowAddAccountPopup(true)}
           >
             <FaUserPlus size={16} />
           </Button>
-
-          {/* ✅ Tombol Download */}
           <Button
             variant="contained"
             color="success"
-            className="flex items-center gap-2 rounded-xl"
+            className="flex items-center gap-2 sm:rounded-xl rounded-full"
           >
             <FaDownload size={16} />
           </Button>
         </div>
       </div>
 
-      {/* ✅ Tabel Data User */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
@@ -136,36 +172,45 @@ const UserTable = () => {
               <th className="border border-gray-300 p-2">Phone</th>
               <th className="border border-gray-300 p-2">Email</th>
               <th className="border border-gray-300 p-2">Password</th>
+              <th className="border border-gray-300 p-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((students, index) => (
+            {filteredUsers.map((student, index) => (
               <tr key={index} className="text-center">
-                <td className="border border-gray-300 p-2">{students.nisn}</td>
+                <td className="border border-gray-300 p-2">{student.nisn}</td>
                 <td className="border border-gray-300 p-2">
                   <a
                     href="#"
                     className="text-blue-500 underline hover:text-blue-700"
-                    onClick={() => handleOpenProfile(students)}
+                    onClick={() => handleOpenProfile(student)}
                   >
-                    {students.nama || "-"}
+                    {student.nama || "-"}
                   </a>
                 </td>
-                <td className="border border-gray-300 p-2">{students.kelas || "-"}</td>
+                <td className="border border-gray-300 p-2">{student.kelas || "-"}</td>
                 <td className="border border-gray-300 p-2">
-                  {students.tanggal_lahir
-                    ? new Date(students.tanggal_lahir).toLocaleDateString("id-ID", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })
+                  {student.tanggal_lahir
+                    ? new Date(student.tanggal_lahir).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })
                     : "-"}
                 </td>
-                <td className="border border-gray-300 p-2">{students.jenis_kelamin || "-"}</td>
-                <td className="border border-gray-300 p-2">{students.agama || "-"}</td>
-                <td className="border border-gray-300 p-2">{students.nomor_hp || "-"}</td>
-                <td className="border border-gray-300 p-2">{students.email || "-"}</td>
-                <td className="border border-gray-300 p-2">{students.password || "-"}</td>
+                <td className="border border-gray-300 p-2">{student.jenis_kelamin || "-"}</td>
+                <td className="border border-gray-300 p-2">{student.agama || "-"}</td>
+                <td className="border border-gray-300 p-2">{student.nomor_hp || "-"}</td>
+                <td className="border border-gray-300 p-2">{student.email || "-"}</td>
+                <td className="border border-gray-300 p-2">********</td>
+                <td className="border border-gray-300 p-2">
+                  <button
+                    onClick={() => handleDeleteClick(student)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -176,7 +221,6 @@ const UserTable = () => {
         <ProfileDetail user={selectedUser} onClose={handleCloseProfilePopup} />
       )}
 
-      {/* ✅ Popup Tambah Akun */}
       {showAddAccountPopup && (
         <div className="fixed mt-10 inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white h-auto p-6 rounded-2xl shadow-lg max-w-4xl relative">
@@ -191,7 +235,6 @@ const UserTable = () => {
         </div>
       )}
 
-      {/* ✅ Popup Konfirmasi Upload */}
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-2 rounded-2xl shadow-lg max-w-lg relative">
@@ -212,6 +255,30 @@ const UserTable = () => {
               >
                 YA
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
+            <p className="mb-4 font-semibold text-gray-800">
+              Anda yakin ingin menghapus akun ini?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleConfirmYes}
+                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+              >
+                Ya
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+              >
+                Tidak
+              </button>
             </div>
           </div>
         </div>

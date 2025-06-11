@@ -59,27 +59,25 @@ export default function ProfileEditPopup({ isOpen, onClose, onUpdated }) {
 
   let newFotoProfil = null;
 
-  // ⬇️ Upload image dulu jika ada
   if (imageFile) {
     const updatedData = await updateProfileImage(imageFile);
-    newFotoProfil = updatedData?.foto_profil; // simpan path-nya
+    newFotoProfil = updatedData?.foto_profil;
   }
 
-  const profileData = {
-    nama: updatedNama,
-    email: updatedEmail,
-    agama: updatedAgama,
-    nomor_hp: updatedNomorHp
-  };
+  // ⬇️ Kirim hanya data yang benar-benar ada
+  const profileData = {};
+  if (updatedNama?.trim()) profileData.nama = updatedNama;
+  if (updatedEmail?.trim()) profileData.email = updatedEmail;
+  if (updatedAgama?.trim()) profileData.agama = updatedAgama;
+  if (updatedNomorHp?.trim()) profileData.nomor_hp = updatedNomorHp;
 
   await updateData(profileData);
   setImageFile(null);
 
-  // ⬇️ Kirim timestamp baru ke parent agar gambar bisa reload
   if (onUpdated) await onUpdated(Date.now());
-
   onClose();
 };
+
 
 
   return (
@@ -141,6 +139,7 @@ export default function ProfileEditPopup({ isOpen, onClose, onUpdated }) {
               >
                 <option value="">-- Pilih Agama --</option>
                 <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
                 <option value="Islam">Islam</option>
                 <option value="Hindu">Hindu</option>
                 <option value="Buddha">Buddha</option>

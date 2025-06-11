@@ -11,21 +11,19 @@ import {
   FaBus,
   FaBars,
   FaPlusCircle,
-  FaChevronRight,
-  FaChevronDown
 } from 'react-icons/fa';
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
 
 const allMenuItems = [
-  { name: 'Beranda', icon: <FaHome />, path: '/beranda', notifications: 2 },
-  { name: 'Profil', icon: <IoPerson />, path: '/kelolaprofil', notifications: 0 },
-  { name: 'Tambah Akun', icon: <FaUserPlus />, path: '/tambahakun', notifications: 1 },
-  { name: 'Kegiatan', icon: <FaPlusCircle />, path: '/kegiatan', notifications: 3 },
-  { name: 'Absensi', icon: <FaClipboardList />, path: '/absensi', notifications: 5 },
-  { name: 'Ekskul', icon: <FaPaintBrush />, path: '/ekskul', notifications: 0 },
-  { name: 'Piket', icon: <FaClipboardCheck />, path: '/piket', notifications: 4 },
-  { name: 'Perjalanan', icon: <FaBus />, notifications: 0 },
+  { name: 'Beranda', icon: <FaHome />, path: '/beranda' },
+  { name: 'Profil', icon: <IoPerson />, path: '/kelolaprofil' },
+  { name: 'Tambah Akun', icon: <FaUserPlus />, path: '/tambahakun' },
+  { name: 'Kegiatan', icon: <FaPlusCircle />, path: '/kegiatan' },
+  { name: 'Absensi', icon: <FaClipboardList />, path: '/absensi' },
+  { name: 'Ekskul', icon: <FaPaintBrush />, path: '/ekskul' },
+  { name: 'Piket', icon: <FaClipboardCheck />, path: '/piket' },
+  { name: 'Karya Wisata', icon: <FaBus />, path: '/karyawisata' },
 ];
 
 const Sidebar = () => {
@@ -33,10 +31,23 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [role, setRole] = useState(null);
-  const [isSubOpen, setIsSubOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const showFullMenu = isMobileOpen || !isCollapsed;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setIsMobileOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const collapsedState = localStorage.getItem("sidebarCollapsed") === "true";
@@ -44,10 +55,6 @@ const Sidebar = () => {
 
     const user = JSON.parse(localStorage.getItem("user"));
     setRole(user?.role || null);
-
-    if (pathname.startsWith("/studytour")) {
-      setIsSubOpen(true);
-    }
   }, [pathname]);
 
   const toggleSidebar = () => {
@@ -61,8 +68,10 @@ const Sidebar = () => {
   };
 
   const handleMenuClick = (path) => {
-    router.push(path);
-    setIsMobileOpen(false);
+    if (path) {
+      router.push(path);
+      if (isMobile) setIsMobileOpen(false);
+    }
   };
 
   const menuItems = allMenuItems
@@ -72,7 +81,11 @@ const Sidebar = () => {
       if (item.name === "Piket" && role === "siswa") return { ...item, path: "/piket/siswa" };
       return item;
     })
-    .filter(item => !(role === "siswa" && (item.name === "Tambah Akun" || item.name === "Kegiatan")));
+    .filter(item => {
+      if (role === "siswa" && (item.name === "Tambah Akun" || item.name === "Kegiatan")) return false;
+      if (role === "orangtua" && item.name !== "Beranda") return false;
+      return true;
+    });
 
   return (
     <>
@@ -83,24 +96,20 @@ const Sidebar = () => {
         <FaBars />
       </button>
 
-      <div
-        className={`
-          fixed inset-0 transition-opacity duration-300 ease-in-out
-          ${isMobileOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
-          md:hidden z-40 bg-black bg-opacity-40 backdrop-blur-sm
-        `}
-        onClick={() => setIsMobileOpen(false)}
-      />
+      {isMobile && (
+        <div
+          className={`fixed inset-0 transition-opacity duration-300 ease-in-out z-40 bg-black bg-opacity-40 backdrop-blur-sm ${isMobileOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
 
-      <div className={
-        `
-          fixed md:static top-0 left-0 h-screen z-[70] bg-[#98abe2] drop-shadow-lg text-white
-          transition-all duration-700 ease-in-out
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0 md:flex md:flex-col
-          ${isCollapsed ? 'w-20' : 'w-64'}
-        `
-      }>
+      <div className={`
+        fixed md:static top-0 left-0 h-screen z-[70] bg-[#98abe2] drop-shadow-lg text-white
+        transition-all duration-700 ease-in-out
+        ${isMobile ? (isMobileOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
+        md:flex md:flex-col
+        ${isMobile ? 'w-4/5' : (isCollapsed ? 'w-20' : 'w-64')}
+      `}>
         <button
           onClick={toggleSidebar}
           className="absolute -right-4 top-8 bg-[#728cd3] p-2 rounded-full hover:bg-[#639fe9] focus:outline-none shadow-lg hidden md:block"
@@ -136,61 +145,16 @@ const Sidebar = () => {
                   pathname.startsWith("/Inputpiket") ||
                   pathname.startsWith("/AbsensiPiket")
                 )) ||
-                (item.name === "Perjalanan" && pathname.startsWith("/studytour")) ||
-                (item.path === "/detailabsensi" && pathname.startsWith("/detailabsensi"));
-
-              if (item.name === "Perjalanan") {
-                return (
-                  <li key={index} className="mx-3 mb-2">
-                    <div
-                      className={`relative flex items-center p-2 cursor-pointer rounded-xl transition-all duration-700 ${
-                        isActive ? "bg-[#728cd3]" : "hover:bg-[#3f84d8]"
-                      }`}
-                      onClick={() => setIsSubOpen(!isSubOpen)}
-                    >
-                      <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
-                        {item.icon}
-                      </span>
-                      <span className={`ml-2 text-lg ${!showFullMenu ? 'hidden' : 'block'}`}>
-                        {item.name}
-                      </span>
-                      {showFullMenu && (
-                        <span className="ml-auto mr-4 text-sm">
-                          {isSubOpen ? <FaChevronDown /> : <FaChevronRight />}
-                        </span>
-                      )}
-                    </div>
-
-                    {showFullMenu && isSubOpen && (
-                      <ul className="ml-14 mt-1 space-y-1">
-                        <li
-                          className={`cursor-pointer text-sm px-3 py-1 rounded hover:bg-[#3f84d8] ${
-                            pathname.startsWith("/studytour") && !pathname.startsWith("/studytour/pameran") ? "bg-[#728cd3]" : ""
-                          }`}
-                          onClick={() => handleMenuClick("/studytour")}
-                        >
-                          Study Tour
-                        </li>
-                        <li
-                          className={`cursor-pointer text-sm px-3 py-1 rounded hover:bg-[#3f84d8] ${
-                            pathname === "/studytour/pameran" ? "bg-[#728cd3]" : ""
-                          }`}
-                          onClick={() => handleMenuClick("/studytour/pameran")}
-                        >
-                          Pameran
-                        </li>
-                      </ul>
-                    )}
-                  </li>
-                );
-              }
+                (item.path === "/karyawisata" && (
+                  pathname.startsWith("/detailkaryawisata/") ||
+                  pathname.startsWith("/inputkaryawisata") ||
+                  pathname.startsWith("/karyawisatadetail")
+                ));
 
               return (
                 <li
                   key={index}
-                  className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${
-                    isActive ? "bg-[#728cd3]" : "hover:bg-[#3f84d8]"
-                  }`}
+                  className={`relative flex items-center p-2 cursor-pointer rounded-xl mx-3 transition-all duration-700 ${isActive ? "bg-[#728cd3]" : "hover:bg-[#3f84d8]"}`}
                   onClick={() => handleMenuClick(item.path)}
                 >
                   <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
@@ -204,18 +168,6 @@ const Sidebar = () => {
             })}
           </ul>
         </nav>
-
-        <button
-          className='flex items-center p-2 cursor-pointer rounded-xl mx-3 mt-auto mb-4 bg-[#728cd3] hover:bg-[#5b70e9] transition-all duration-700'
-          onClick={() => handleMenuClick('/')}
-        >
-          <span className={`text-lg ${isCollapsed ? 'w-20 flex justify-center' : 'ml-6'}`}>
-            <RiLogoutCircleRLine />
-          </span>
-          <span className={`ml-10 text-lg ${!showFullMenu ? 'hidden' : 'block'}`}>
-            Logout
-          </span>
-        </button>
       </div>
     </>
   );

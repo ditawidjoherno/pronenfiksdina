@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { FaPlus, FaUser } from 'react-icons/fa';
+import { FaPlus, FaUser, FaTrash } from 'react-icons/fa';
 import { IoMdLogIn } from 'react-icons/io';
 import PopupForm from './EkskulForm';
 import axios from 'axios';
@@ -12,6 +12,9 @@ export default function EkskulList() {
   const pathname = usePathname();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [ekskulData, setEkskulData] = useState([]);
+
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const API_URL = 'http://localhost:8000/api/ekskul';
 
@@ -68,6 +71,31 @@ export default function EkskulList() {
     setIsPopupOpen(false);
   };
 
+  const confirmDelete = (id) => {
+    setSelectedId(id);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedId) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API_URL}/${selectedId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setEkskulData((prev) => prev.filter((e) => e.id !== selectedId));
+      console.log("✅ Ekskul berhasil dihapus");
+    } catch (err) {
+      console.error("❌ Gagal menghapus ekskul:", err.response?.data || err.message);
+      alert("Gagal menghapus ekskul.");
+    } finally {
+      setShowConfirm(false);
+      setSelectedId(null);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 flex-1 mt-10 max-w-7xl rounded-md">
       <button
@@ -95,7 +123,7 @@ export default function EkskulList() {
             return (
               <div
                 key={`ekskul-${index}`}
-                className="bg-blue-100 rounded-xl shadow-lg overflow-hidden"
+                className="bg-blue-100 rounded-xl shadow-lg overflow-hidden relative"
               >
                 <img
                   src={imageSrc}
@@ -103,7 +131,16 @@ export default function EkskulList() {
                   className="w-full h-40 object-cover"
                 />
                 <div className="p-4">
-                  <h3 className="text-xl font-bold text-blue-800">{ekskul.name}</h3>
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-xl font-bold text-blue-800">{ekskul.name}</h3>
+                    <button
+                      onClick={() => confirmDelete(ekskul.id)}
+                      className="text-red-600 hover:text-red-800"
+                      title="Hapus Ekskul"
+                    >
+                      <FaTrash className="w-5 h-5" />
+                    </button>
+                  </div>
                   <div className="flex items-center text-gray-600 text-sm mt-2">
                     <FaUser className="w-4 h-4 mr-2" />
                     <div>
@@ -125,6 +162,34 @@ export default function EkskulList() {
           })
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus */}
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center">
+            <p className="mb-4 font-semibold text-gray-800">
+              Anda yakin ingin menghapus ekskul ini?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleConfirmDelete}
+                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+              >
+                Ya
+              </button>
+              <button
+                onClick={() => {
+                  setShowConfirm(false);
+                  setSelectedId(null);
+                }}
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+              >
+                Tidak
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

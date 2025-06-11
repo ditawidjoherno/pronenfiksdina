@@ -46,24 +46,24 @@ export default function FormInformasi({ onAddInfo, onClose }) {
   return (
     <div className="w-full px-4 sm:px-6 flex justify-center">
       <form
-        onSubmit={handleSubmit}
-        className="sm:max-w-md max-w-64  bg-white p-6 rounded-xl "
-      >
-        <h2 className="text-lg justify-center font-bold text-gray-800">Tambah Informasi</h2>
+  onSubmit={handleSubmit}
+  className="sm:max-w-md max-w-64 bg-white p-6 rounded-xl h-[410px] sm:h-auto"
+>
+        <h2 className="sm:text-lg text-md justify-center font-bold text-gray-800">Tambah Informasi</h2>
 
         {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
 
-        <div className="mt-4">
+        <div className="sm:mt-4 mt-2">
           <label className="block font-medium">Hari / Tanggal</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg sm:px-3 px-2 py-2 mt-1 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <div className="mt-4">
+        <div className="sm:mt-4 mt-2">
           <label className="block font-medium">Judul</label>
           <input
             type="text"
@@ -74,7 +74,7 @@ export default function FormInformasi({ onAddInfo, onClose }) {
           />
         </div>
 
-        <div className="mt-4">
+        <div className="sm:mt-4 mt-2">
           <label className="block font-medium">Deskripsi</label>
           <div className="relative">
             <textarea
@@ -87,13 +87,13 @@ export default function FormInformasi({ onAddInfo, onClose }) {
           </div>
         </div>
 
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 sm:text-sm text-xs text-gray-500">
           *Isi deskripsi dapat disesuaikan. Anda dapat mengeditnya kembali jika terjadi kekeliruan.
         </p>
 
         <button
           type="submit"
-          className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg flex justify-center items-center"
+          className="sm:mt-4 mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg flex justify-center items-center"
         >
           <AiOutlineUpload className="h-6 w-6 mr-2" />
           Unggah

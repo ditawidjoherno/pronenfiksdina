@@ -1,24 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaClipboardList } from 'react-icons/fa';
 
-const AttendanceTable = () => {
-  const [selectedMonth, setSelectedMonth] = useState(3); // Maret
-  const [selectedYear, setSelectedYear] = useState(2025);
-
-  // Dummy user data
-  const user = {
-    name: "Akio",
-    kelas: "X-A",
-    photo: "/images/profil.png", // Ganti sesuai path gambar profil siswa
-  };
-
-  const [data] = useState([
-    { date: 'Senin, 12 Maret 2025', status: 'hadir', waktu: '07.20 am' },
-    { date: 'Selasa, 13 Maret 2025', status: 'tidak-hadir', waktu: '07.20 am' },
-    { date: 'Rabu, 14 Maret 2025', status: 'terlambat', waktu: '07.30 am' },
-  ]);
+export default function AttendanceTable() {
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [data, setData] = useState([]);
+  const [user, setUser] = useState({
+    name: '-',
+    kelas: '-',
+    photo: '/images/profil.png',
+  });
 
   const monthNames = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -26,18 +19,55 @@ const AttendanceTable = () => {
   ];
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'hadir': return 'bg-green-500';
-      case 'tidak-hadir': return 'bg-red-500';
-      case 'terlambat': return 'bg-yellow-500';
+    switch (status?.toLowerCase()) {
+      case 'berkontribusi': return 'bg-green-500';
+      case 'tidak berkontribusi': return 'bg-red-500';
       default: return 'bg-gray-400';
     }
   };
 
+  useEffect(() => {
+    const fetchUserAndData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const resUser = await fetch('http://localhost:8000/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+        const resultUser = await resUser.json();
+        const kelas = resultUser.user.kelas;
+
+        setUser({
+          name: resultUser.user.nama,
+          kelas: kelas ?? '-',
+          photo: resultUser.user.foto_profil
+            ? `http://localhost:8000/storage/${resultUser.user.foto_profil}`
+            : '/images/profil.png',
+        });
+
+        const resData = await fetch(`http://localhost:8000/api/piket-saya?bulan=${selectedMonth}&tahun=${selectedYear}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const resultData = await resData.json();
+        setData(resultData ?? []);
+      } catch (err) {
+        console.error('❌ Gagal ambil data:', err.message);
+      }
+    };
+
+    fetchUserAndData();
+  }, [selectedMonth, selectedYear]);
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full mt-5">
-
-      {/* Header + filter bulan/tahun */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <FaClipboardList className="text-blue-700 text-2xl" />
@@ -64,7 +94,9 @@ const AttendanceTable = () => {
           </select>
         </div>
       </div>
-            <div className="flex items-center mb-6">
+
+      {/* User Info */}
+      <div className="flex items-center mb-6">
         <img
           src={user.photo}
           alt="Foto Profil"
@@ -76,39 +108,39 @@ const AttendanceTable = () => {
         </div>
       </div>
 
-      {/* Tabel */}
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-blue-100 text-black">
               <th className="p-4 text-center font-medium border-b border-gray-300 w-[25%]">Hari / Tanggal</th>
-              <th className="p-4 text-center font-medium border-b border-gray-300 w-[15%]">Hadir</th>
-              <th className="p-4 text-center font-medium border-b border-gray-300 w-[15%]">Tidak Hadir</th>
-              <th className="p-4 text-center font-medium border-b border-gray-300 w-[15%]">Terlambat</th>
+              <th className="p-4 text-center font-medium border-b border-gray-300 w-[20%]">Berkontribusi</th>
+              <th className="p-4 text-center font-medium border-b border-gray-300 w-[20%]">Tidak Berkontribusi</th>
               <th className="p-4 text-center font-medium border-b border-gray-300 w-[20%]">Waktu</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
-                <td className="p-4 border-b border-gray-200 text-gray-700 text-center">{item.date}</td>
-                <td className="p-4 border-b border-gray-200">
-                  <div className={`w-6 h-6 rounded-full mx-auto ${item.status === 'hadir' ? getStatusColor('hadir') : 'bg-gray-300'}`} />
-                </td>
-                <td className="p-4 border-b border-gray-200">
-                  <div className={`w-6 h-6 rounded-full mx-auto ${item.status === 'tidak-hadir' ? getStatusColor('tidak-hadir') : 'bg-gray-300'}`} />
-                </td>
-                <td className="p-4 border-b border-gray-200">
-                  <div className={`w-6 h-6 rounded-full mx-auto ${item.status === 'terlambat' ? getStatusColor('terlambat') : 'bg-gray-300'}`} />
-                </td>
-                <td className="p-4 border-b border-gray-200 text-gray-700 text-center">{item.waktu}</td>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-4 text-gray-400">Belum ada data piket</td>
               </tr>
-            ))}
+            ) : (
+              data.map((item, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
+                  <td className="p-4 border-b border-gray-200 text-gray-700 text-center">{item.tanggal}</td>
+                  <td className="p-4 border-b border-gray-200">
+                    <div className={`w-6 h-6 rounded-full mx-auto ${item.status === 'berkontribusi' ? getStatusColor('berkontribusi') : 'bg-gray-300'}`} />
+                  </td>
+                  <td className="p-4 border-b border-gray-200">
+                    <div className={`w-6 h-6 rounded-full mx-auto ${item.status === 'tidak berkontribusi' ? getStatusColor('tidak berkontribusi') : 'bg-gray-300'}`} />
+                  </td>
+                  <td className="p-4 border-b border-gray-200 text-gray-700 text-center">{item.waktu || '-'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
-
-export default AttendanceTable;
+}
