@@ -51,7 +51,7 @@ return (
             className="flex items-center justify-between bg-white p-4 mb-4 rounded-xl border-2 border-blue-400 shadow-sm"
           >
             <div>
-              <h3 className="text-lg font-bold text-gray-800">{ekskul.nama}</h3>
+              <h3 className="text-lg font-bold text-gray-800">{ekskul.name}</h3>
               <div className="flex items-center text-gray-600 mt-1">
                 <img
                   src="/images/profil.png"

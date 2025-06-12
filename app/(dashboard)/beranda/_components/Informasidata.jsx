@@ -91,22 +91,32 @@ export default function listInform() {
       });
   };
 
-  const handleAddInfo = async (newInfo) => {
-    const finalInfo = {
-      ...newInfo,
-      author: session?.user?.name?.trim() || 'Admin Sistem',
-      photo: session?.user?.foto_profil || '/images/profil.jpg',
-    };
+const handleAddInfo = async (newInfo) => {
+  const token = localStorage.getItem('token');
 
-    const res = await fetch(API_BASE, {
+  try {
+    const response = await fetch('http://localhost:8000/api/input-informasi', {  // <-- pastikan ini sudah benar
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(finalInfo),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(newInfo),
     });
 
-    const created = await res.json();
-    setInformasiData((prev) => [created, ...prev]);
-  };
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Gagal menambahkan informasi');
+    }
+
+    const savedInfo = await response.json();
+
+    setInformasiData((prev) => [savedInfo, ...prev]);
+  } catch (error) {
+    console.error('Error saat menambahkan informasi:', error.message);
+  }
+};
+
 
   const getShortText = (text) => {
     if (typeof text !== 'string') return '-';
